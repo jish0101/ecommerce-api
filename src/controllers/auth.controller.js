@@ -3,7 +3,7 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const User = require("../models/User");
-const { default: mongoose } = require("mongoose");
+const mongoose = require("mongoose");
 
 const createUser = async (req, res) => {
   try {
@@ -69,7 +69,8 @@ const loginUser = async (req, res) => {
 
       const newUser = await User.findOneAndUpdate(
         { email: foundUser?.email },
-        { ...foundUser, refreshToken }
+        { refreshToken: refreshToken },
+        { new: true }
       );
 
       await newUser.save();
