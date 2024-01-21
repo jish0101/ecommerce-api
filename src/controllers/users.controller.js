@@ -9,7 +9,12 @@ const getUsers = async (req, res) => {
   res.json(req?.url);
 };
 const deleteUsers = async (req, res) => {
+  try {
+    const {} = req;
   res.json(req?.url);
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 module.exports = {

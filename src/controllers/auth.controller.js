@@ -7,7 +7,7 @@ const mongoose = require("mongoose");
 
 const createUser = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password } = req.body;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -16,11 +16,20 @@ const createUser = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    const refreshToken = createToken({
+      data: {
+        name,
+        email,
+        roles: "member",
+      },
+      type: 2,
+    });
+
     const user = new User({
       name,
       email,
       password: hashedPassword,
-      role,
+      refreshToken,
     });
 
     const savedUser = await user.save();
