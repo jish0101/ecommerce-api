@@ -13,3 +13,5 @@ const credentials = (req, res, next) => {
     console.log(error);
   }
 };
+
+module.exports = credentials;
