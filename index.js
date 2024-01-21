@@ -7,9 +7,11 @@ const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
 const corsOptions = require("./src/utils/corsOptions");
+const credentials = require("./src/middlewares/credentials");
 const mongoose = require("mongoose");
 const connectDB = require("./src/utils/dbConnect");
 const cookieParser = require("cookie-parser");
+const verifyJWT = require("./src/middlewares/verifyJWT");
 
 require("dotenv").config();
 
@@ -21,19 +23,23 @@ const BASE_URL = process.env.BASE_URL;
 connectDB();
 
 // routes
-const userRouter = require("./src/routers/users.router");
-const authRouter = require("./src/routers/auth.router");
+const userRouter = require("./src/routers/users/usersRouter");
+const authRouter = require("./src/routers/auth/authRouter");
+const refreshRouter = require("./src/routers/auth/refresh");
 
 app.use("/", express.static(path.join(__dirname, "/public")));
 app.set("view engine", "ejs");
+app.use(credentials);
 app.use(cors(corsOptions));
 app.use(morgan("common"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.use("/users", userRouter);
 app.use("/auth", authRouter);
+app.use("/refresh", refreshRouter);
+app.use(verifyJWT);
+app.use("/users", userRouter);
 
 app.get("/", (req, res) => {
   res.render(path.join(__dirname, "src", "views", "apiHome.ejs"));

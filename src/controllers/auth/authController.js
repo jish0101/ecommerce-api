@@ -2,8 +2,8 @@
 
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const User = require("../models/User");
-const mongoose = require("mongoose");
+const User = require("../../models/User");
+// const mongoose = require("mongoose");
 
 const createUser = async (req, res) => {
   try {
@@ -16,20 +16,10 @@ const createUser = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const refreshToken = createToken({
-      data: {
-        name,
-        email,
-        roles: "member",
-      },
-      type: 2,
-    });
-
     const user = new User({
       name,
       email,
       password: hashedPassword,
-      refreshToken,
     });
 
     const savedUser = await user.save();
@@ -67,6 +57,7 @@ const loginUser = async (req, res) => {
         },
         type: 1,
       });
+
       const refreshToken = createToken({
         data: {
           email: foundUser?.email,
@@ -84,6 +75,13 @@ const loginUser = async (req, res) => {
 
       await newUser.save();
 
+      res.cookie("jwt", refreshToken, {
+        httpOnly: true,
+        sameSite: "None",
+        secure: true,
+        maxAge: 24 * 60 * 60 * 1000,
+      });
+
       return res.json({
         status: true,
         message: `${foundUser.name} is logged-in.`,
@@ -98,6 +96,40 @@ const loginUser = async (req, res) => {
         .status(401)
         .json({ status: false, message: "Invalid Credentials!" });
     }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const logoutUser = async (req, res) => {
+  try {
+    const cookies = req.cookies;
+
+    if (!cookies?.jwt) {
+      return res.sendStatus(204);
+    }
+
+    const refreshToken = cookies.jwt;
+    const foundUser = await User.findOne({ refreshToken });
+
+    if (!foundUser) {
+      res.clearCookie("jwt", { httpOnly: true });
+      return res.sendStatus(204);
+    }
+
+    const newUser = await User.findOneAndUpdate(
+      { email: foundUser?.email },
+      { refreshToken: "" },
+      { new: true }
+    );
+
+    await newUser.save();
+    res.clearCookie("jwt", {
+      httpOnly: true,
+      sameSite: "None",
+      secure: true,
+    }); // secure: true for prod
+    res.sendStatus(204);
   } catch (error) {
     console.log(error);
   }
@@ -124,4 +156,5 @@ function createToken({ data, type }) {
 module.exports = {
   createUser,
   loginUser,
+  logoutUser,
 };

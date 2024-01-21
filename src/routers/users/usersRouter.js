@@ -1,6 +1,8 @@
+/** @format */
+
 const express = require("express");
 const router = express.Router();
-const userController = require("../controllers/users.controller.js");
+const userController = require("../../controllers/user/usersController.js");
 
 router
   .route("/")

@@ -11,5 +11,6 @@ const corsOptions = {
 }
 
 module.exports = {
-    corsOptions
+    corsOptions,
+    allowedList
 }
