@@ -1,5 +1,3 @@
-/** @format */
-
 const corsOptions = require("../utils/corsOptions");
 
 const credentials = (req, res, next) => {
