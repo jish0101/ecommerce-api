@@ -2,7 +2,7 @@
 
 const http = require("http");
 const path = require("path");
-const { log } = require("console");
+const { log, Console } = require("console");
 const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
