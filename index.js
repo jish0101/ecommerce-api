@@ -11,16 +11,10 @@ const credentials = require('./middlewares/credentials');
 const corsOptions = require('./utils/corsOptions');
 const connectDB = require('./utils/dbConnect');
 const verifyJWT = require('./middlewares/verifyJWT');
+const { PORT, BASE_URL } = require('./utils/globals');
 
 const app = express();
 const server = http.createServer(app);
-const {
-  env: { PORT },
-} = process;
-
-const {
-  env: { BASE_URL },
-} = process;
 
 connectDB();
 
