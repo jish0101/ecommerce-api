@@ -1,22 +1,26 @@
+require('dot-env').config();
 const http = require('http');
+const express = require('express');
+const mongoose = require('mongoose');
 const path = require('path');
 const { log } = require('console');
-const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
-const corsOptions = require('./utils/corsOptions');
-const credentials = require('./middlewares/credentials');
-const mongoose = require('mongoose');
-const connectDB = require('./utils/dbConnect');
 const cookieParser = require('cookie-parser');
+const credentials = require('./middlewares/credentials');
+const corsOptions = require('./utils/corsOptions');
+const connectDB = require('./utils/dbConnect');
 const verifyJWT = require('./middlewares/verifyJWT');
-
-require('dotenv').config();
 
 const app = express();
 const server = http.createServer(app);
-const PORT = process.env.PORT;
-const BASE_URL = process.env.BASE_URL;
+const {
+  env: { PORT },
+} = process;
+
+const {
+  env: { BASE_URL },
+} = process;
 
 connectDB();
 
