@@ -1,11 +1,9 @@
-/** @format */
-
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const userController = require("../../controllers/user/usersController.js");
+const userController = require('../../controllers/user/usersController.js');
 
 router
-  .route("/")
+  .route('/')
   .post(userController.createUser)
   .get(userController.getUsers)
   .put(userController.updateUser)

@@ -1,5 +1,6 @@
-const jwt = require("jsonwebtoken");
-const User = require("../../models/User");
+const secret = require('../../utils/globals');
+const jwt = require('jsonwebtoken');
+const User = require('../../models/User');
 // const bcrypt = require("bcrypt");
 // const mongoose = require("mongoose");
 
@@ -17,7 +18,7 @@ const handleRefreshToken = async (req, res) => {
       return res.sendStatus(403);
     }
 
-    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SEC, (err, decoded) => {
+    jwt.verify(refreshToken, secret?.refreshTokenSec, (err, decoded) => {
       if (err || decoded.name !== foundUser.name) {
         return res.sendStatus(403);
       }
@@ -25,9 +26,9 @@ const handleRefreshToken = async (req, res) => {
         data: {
           email: foundUser?.email,
           roles: foundUser?.role,
-          name: foundUser?.name,
+          name: foundUser?.name
         },
-        type: 1,
+        type: 1
       });
 
       res.json({
@@ -36,8 +37,8 @@ const handleRefreshToken = async (req, res) => {
         data: {
           name: foundUser?.name,
           email: foundUser?.email,
-          token: accessToken,
-        },
+          token: accessToken
+        }
       });
     });
   } catch (error) {
@@ -48,13 +49,13 @@ const handleRefreshToken = async (req, res) => {
 function createToken({ data, type }) {
   try {
     if (type === 1) {
-      const token = jwt.sign(data, process.env.ACCESS_TOKEN_SEC, {
-        expiresIn: "600s",
+      const token = jwt.sign(data, secret?.accessTokenSec, {
+        expiresIn: '600s'
       });
       return token;
     } else {
-      const token = jwt.sign(data, process.env.REFRESH_TOKEN_SEC, {
-        expiresIn: "2d",
+      const token = jwt.sign(data, secret?.refreshTokenSec, {
+        expiresIn: '2d'
       });
       return token;
     }
