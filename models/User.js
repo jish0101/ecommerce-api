@@ -18,12 +18,19 @@ const userSchema = new mongoose.Schema({
     minlength: 8,
   },
   address: {
-    type: String,
-    require: true,
+    street: String,
+    city: String,
+    state: String,
+    country: String,
+    code: String,
   },
   tempOtp: {
-    type: Object,
-    require: true,
+    otp: Number,
+    expiredAfter: Number,
+  },
+  profile: {
+    type: String,
+    required: true,
   },
   isVerifiedEmail: {
     type: Boolean,
@@ -38,6 +45,7 @@ const userSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
+    immutable: true,
   },
   refreshToken: {
     type: String,

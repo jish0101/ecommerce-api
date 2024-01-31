@@ -1,12 +1,15 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../../models/User');
+const path = require('path');
 const expressAsyncHandler = require('express-async-handler');
 const { requestOTP } = require('../../utils/utility');
 const { sendEmail } = require('../../utils/emailService');
+const { BASE_URL, PORT } = require('../../utils/globals');
 
 const createUser = expressAsyncHandler(async (req, res) => {
   const { name, email, password, address } = req.body;
+  const profile = `${BASE_URL}:${PORT}/public/images/${req.file.filename})}`;
   const existingUser = await User.findOne({ email });
 
   if (existingUser) {
@@ -16,12 +19,12 @@ const createUser = expressAsyncHandler(async (req, res) => {
   const tempOtp = requestOTP(10);
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  console.log('🚀 ~ createUser ~ otp:', tempOtp);
   const user = new User({
     name,
     email,
     address,
     tempOtp,
+    profile,
     password: hashedPassword,
   });
 
