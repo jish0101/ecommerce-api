@@ -1,25 +1,21 @@
-const jwt = require('jsonwebtoken');
 require('dotenv').config();
+const jwt = require('jsonwebtoken');
+const { accessTokenSec } = require('../utils/globals');
 
 const verifyJWT = (req, res, next) => {
-  try {
-    const authHeader = req.headers['Authorization'] || req.headers['authorization'];
+  const authHeader = req.headers.Authorization || req.headers.authorization;
 
-    if (!authHeader) {
-      console.log('Unauthorized');
-      return res.sendStatus(401);
-    }
-
-    const token = authHeader.split(' ')[1];
-
-    jwt.verify(token, process.env.ACCESS_TOKEN_SEC, (err, decoded) => {
-      if (err) return res.sendStatus(403);
-      req.user = decoded.name;
-      next();
-    });
-  } catch (error) {
-    console.log(error);
+  if (!authHeader) {
+    return res.sendStatus(401);
   }
+
+  const token = authHeader.split(' ')[1];
+
+  return jwt.verify(token, accessTokenSec, (err, decoded) => {
+    if (err) return res.sendStatus(403);
+    req.user = decoded.name;
+    return next();
+  });
 };
 
 module.exports = verifyJWT;

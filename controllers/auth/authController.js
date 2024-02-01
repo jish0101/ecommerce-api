@@ -1,8 +1,8 @@
 const jwt = require('jsonwebtoken');
+const expressAsyncHandler = require('express-async-handler');
 const bcrypt = require('bcrypt');
 const User = require('../../models/User');
-const path = require('path');
-const expressAsyncHandler = require('express-async-handler');
+const { createToken } = require('../../utils/utility');
 const { requestOTP } = require('../../utils/utility');
 const { sendEmail } = require('../../utils/emailService');
 const { BASE_URL, PORT } = require('../../utils/globals');
@@ -34,7 +34,7 @@ const createUser = expressAsyncHandler(async (req, res) => {
 });
 
 const verifyOTP = expressAsyncHandler(async (req, res) => {
-  const { email, otp } = req?.body;
+  const { email, otp } = req.body;
 
   if (!otp) {
     res.status(400);
@@ -53,7 +53,7 @@ const verifyOTP = expressAsyncHandler(async (req, res) => {
     throw new Error('No user found with this email!');
   }
 
-  if (existingUser.tempOtp?.otp === parseInt(otp)) {
+  if (existingUser.tempOtp?.otp === parseInt(otp, 10)) {
     if (Date.now() > existingUser.tempOtp?.expiredAfter) {
       throw new Error('OTP has been expired!');
     }
@@ -117,7 +117,7 @@ const loginUser = expressAsyncHandler(async (req, res) => {
 
     const newUser = await User.findOneAndUpdate(
       { email: foundUser?.email },
-      { refreshToken: refreshToken },
+      { refreshToken },
       { new: true },
     );
 
@@ -139,14 +139,13 @@ const loginUser = expressAsyncHandler(async (req, res) => {
         token: accessToken,
       },
     });
-  } else {
-    res.status(401);
-    throw new Error('Invalid Credentials!');
   }
+  res.status(401);
+  throw new Error('Invalid Credentials!');
 });
 
 const logoutUser = expressAsyncHandler(async (req, res) => {
-  const cookies = req.cookies;
+  const { cookies } = req;
 
   if (!cookies?.jwt) {
     return res.sendStatus(204);
@@ -172,26 +171,8 @@ const logoutUser = expressAsyncHandler(async (req, res) => {
     sameSite: 'None',
     // secure: true,
   });
-  res.sendStatus(204);
+  return res.sendStatus(204);
 });
-
-function createToken({ data, type }) {
-  try {
-    if (type === 1) {
-      const token = jwt.sign(data, process.env.ACCESS_TOKEN_SEC, {
-        expiresIn: '600s',
-      });
-      return token;
-    } else {
-      const token = jwt.sign(data, process.env.REFRESH_TOKEN_SEC, {
-        expiresIn: '2d',
-      });
-      return token;
-    }
-  } catch (error) {
-    console.log(error);
-  }
-}
 
 module.exports = {
   createUser,

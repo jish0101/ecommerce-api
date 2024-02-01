@@ -4,12 +4,12 @@ const path = require('path');
 const fs = require('fs');
 
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
+  destination: (req, file, cb) => {
     cb(null, path.join(__dirname, '../public/images/'));
   },
-  filename: function (req, file, cb) {
-    const uniquesuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, file.fieldname + '-' + uniquesuffix + path.extname(file.originalname));
+  filename: (req, file, cb) => {
+    const uniquesuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+    cb(null, `${file.fieldname}-${uniquesuffix}${path.extname(file.originalname)}`);
   },
 });
 
@@ -22,7 +22,7 @@ const multerFilter = (req, file, cb) => {
 };
 
 const uploadPhoto = multer({
-  storage: storage,
+  storage,
   fileFilter: multerFilter,
   limits: { fileSize: 5000000 },
 });
@@ -39,7 +39,7 @@ const productImgResize = async (req, res, next) => {
       fs.unlinkSync(`public/images/products/${file.filename}`);
     }),
   );
-  next();
+  return next();
 };
 
 const blogImgResize = async (req, res, next) => {
@@ -54,6 +54,6 @@ const blogImgResize = async (req, res, next) => {
       fs.unlinkSync(`public/images/blogs/${file.filename}`);
     }),
   );
-  next();
+  return next();
 };
 module.exports = { uploadPhoto, productImgResize, blogImgResize };

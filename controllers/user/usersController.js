@@ -1,4 +1,3 @@
-
 const createUser = async (req, res) => {
   res.json(req?.url);
 };
@@ -8,14 +7,7 @@ const updateUser = async (req, res) => {
 const getUsers = async (req, res) => {
   res.json(req?.url);
 };
-const deleteUsers = async (req, res) => {
-  try {
-    const {} = req;
-  res.json(req?.url);
-  } catch (error) {
-    console.log(error);
-  }
-};
+const deleteUsers = async (req, res) => res.json(req?.url);
 
 module.exports = {
   createUser,

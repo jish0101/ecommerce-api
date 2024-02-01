@@ -1,5 +1,5 @@
 const nodemailer = require('nodemailer');
-const { SMTP_USERNAME, SMTP_PASSWORD, SMTP_HOST, SMTP_PORT } = require('../utils/globals');
+const { SMTP_USERNAME, SMTP_PASSWORD, SMTP_HOST, SMTP_PORT } = require('./globals');
 
 const transport = nodemailer.createTransport({
   host: SMTP_HOST,
@@ -11,14 +11,7 @@ const transport = nodemailer.createTransport({
 });
 
 const sendEmail = (to, subject, body) => {
-  //   const mailOptions = {
-  //     from: 'your_email@gmail.com',
-  //     to: to,
-  //     subject: subject,
-  //     html: body,
-  //   };
-
-  var mailOptions = {
+  const mailOptions = {
     from: 'Joyboy',
     to: 'jishankhannew@gmail.com',
     subject: 'Nice Nodemailer test',
@@ -30,7 +23,7 @@ const sendEmail = (to, subject, body) => {
     if (error) {
       console.error(error);
     } else {
-      console.log('Email sent: ' + info.response);
+      console.log(`Email Sent => ${info.response}`);
     }
   });
 };
