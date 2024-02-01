@@ -7,7 +7,7 @@ const { log } = require('console');
 const morgan = require('morgan');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const { notFound, errorHandler } = require('./middlewares/errorHandler');
+const { notFound, errorHandler, schemaErrorHandler } = require('./middlewares/errorHandler');
 const credentials = require('./middlewares/credentials');
 const corsOptions = require('./utils/corsOptions');
 const connectDB = require('./utils/dbConnect');
@@ -34,18 +34,16 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.get('/', (req, res) => {
-  res.json({ message: 'Home route of the application.' });
-});
-app.get('/home', (req, res) => {
   res.render(path.join(__dirname, 'views', 'apiHome.ejs'));
 });
 
 app.use('/auth', authRouter);
 app.use('/refresh', refreshRouter);
 app.use(notFound);
-app.use(errorHandler);
 app.use(verifyJWT);
 app.use('/users', userRouter);
+app.use(schemaErrorHandler);
+app.use(errorHandler);
 
 mongoose.connection.once('open', () => {
   server.listen(PORT, () => log(`Server is running on URL => ${BASE_URL}:${PORT}`));

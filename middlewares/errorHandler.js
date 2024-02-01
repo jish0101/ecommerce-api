@@ -13,4 +13,17 @@ const errorHandler = (err, req, res) => {
     stack: err?.stack,
   });
 };
-module.exports = { notFound, errorHandler };
+
+const schemaErrorHandler = (err, req, res, next) => {
+  if (err && err.error && err.error.isJoi) {
+    res.status(400).json({
+      type: err.type, // can be query or headers or body
+      message: err.error.toString(),
+    });
+  } else {
+    // pass on to another error handler
+    next(err);
+  }
+};
+
+module.exports = { notFound, errorHandler, schemaErrorHandler };

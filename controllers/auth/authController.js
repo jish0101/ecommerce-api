@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const expressAsyncHandler = require('express-async-handler');
 const bcrypt = require('bcrypt');
-const User = require('../../models/User');
+const User = require('../../models/User/User');
 const { createToken } = require('../../utils/utility');
 const { requestOTP } = require('../../utils/utility');
 const { sendEmail } = require('../../utils/emailService');
