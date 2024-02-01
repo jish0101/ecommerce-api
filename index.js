@@ -1,4 +1,5 @@
 require('dotenv').config();
+// require('express-async-errors');
 const http = require('http');
 const express = require('express');
 const mongoose = require('mongoose');
@@ -39,10 +40,11 @@ app.get('/', (req, res) => {
 
 app.use('/auth', authRouter);
 app.use('/refresh', refreshRouter);
-app.use(notFound);
 app.use(verifyJWT);
 app.use('/users', userRouter);
-app.use(schemaErrorHandler);
+
+// app.use(schemaErrorHandler);
+// app.use(notFound);
 app.use(errorHandler);
 
 mongoose.connection.once('open', () => {

@@ -1,5 +1,7 @@
 const nodemailer = require('nodemailer');
-const { SMTP_USERNAME, SMTP_PASSWORD, SMTP_HOST, SMTP_PORT } = require('./globals');
+const ejs = require('ejs');
+const path = require('path');
+const { SMTP_USERNAME, SMTP_FROM, SMTP_PASSWORD, SMTP_HOST, SMTP_PORT } = require('./globals');
 
 const transport = nodemailer.createTransport({
   host: SMTP_HOST,
@@ -10,22 +12,61 @@ const transport = nodemailer.createTransport({
   },
 });
 
-const sendEmail = (to, subject, body) => {
-  const mailOptions = {
-    from: 'Joyboy',
-    to: 'jishankhannew@gmail.com',
-    subject: 'Nice Nodemailer test',
-    text: 'Hey there, it’s our first message sent with Nodemailer ;) ',
-    html: '<b>Hey there! </b><br> This is our first message sent with Nodemailer',
-  };
-
-  transport.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.error(error);
-    } else {
-      console.log(`Email Sent => ${info.response}`);
-    }
-  });
+const templateList = {
+  welcome: {
+    name: 'welcome',
+    subject: 'Welcome to Our App',
+    path: 'welcome.ejs',
+  },
+  otp: {
+    name: 'otp',
+    subject: 'Email Verification',
+    path: 'otp.ejs',
+  },
+  forgotPasswordOtp: {
+    name: 'forgotPasswordOtp',
+    subject: 'Forgot Password',
+    path: 'forgotPasswordOtp.ejs',
+  },
 };
 
-module.exports = { sendEmail };
+const renderTemplate = (templatePath, data) => {
+  try {
+    return ejs.renderFile(templatePath, data);
+  } catch (error) {
+    console.log('error => ', error);
+    return error;
+  }
+};
+
+const sendEmail = async (to, templateName, data) => {
+  try {
+    const templateInfo = templateList[templateName];
+
+    if (!templateInfo) {
+      console.error(`Template "${templateName}" not found.`);
+      return false;
+    }
+
+    const templatePath = path.join(__dirname, '..', 'views', 'emailTemplates', templateInfo.path);
+
+    const html = await renderTemplate(templatePath, data);
+
+    const mailOptions = {
+      from: SMTP_FROM,
+      to,
+      subject: templateInfo.subject,
+      html,
+    };
+
+    const info = await transport.sendMail(mailOptions);
+
+    console.log(`Email Sent => ${info.response}`);
+    return true;
+  } catch (error) {
+    console.log('🚀 ~ sendEmail ~ error:', error);
+    return false;
+  }
+};
+
+module.exports = { sendEmail, templateList };

@@ -1,15 +1,15 @@
 const jwt = require('jsonwebtoken');
-const expressAsyncHandler = require('express-async-handler');
+const asyncHandler = require('express-async-handler');
 const bcrypt = require('bcrypt');
 const User = require('../../models/User/User');
 const { createToken } = require('../../utils/utility');
 const { requestOTP } = require('../../utils/utility');
-const { sendEmail } = require('../../utils/emailService');
+const { sendEmail, templateList } = require('../../utils/emailService');
 const { BASE_URL, PORT } = require('../../utils/globals');
 
-const createUser = expressAsyncHandler(async (req, res) => {
+const createUser = asyncHandler(async (req, res) => {
   const { name, email, password, address } = req.body;
-  const profile = `${BASE_URL}:${PORT}/public/images/${req.file.filename})}`;
+  const profile = `${BASE_URL}:${PORT}/public/images/${req?.file?.filename})}`;
   const existingUser = await User.findOne({ email });
 
   if (existingUser) {
@@ -18,6 +18,13 @@ const createUser = expressAsyncHandler(async (req, res) => {
   }
   const tempOtp = requestOTP(10);
   const hashedPassword = await bcrypt.hash(password, 10);
+
+  const isEmailSent = await sendEmail(email, templateList?.welcome?.name, { username: name });
+  const isOTPSent = await sendEmail(email, templateList?.otp?.name, { otp: tempOtp?.otp });
+
+  if (!isEmailSent || !isOTPSent) {
+    throw new Error('Error sending OTP to Provided Email!');
+  }
 
   const user = new User({
     name,
@@ -33,7 +40,7 @@ const createUser = expressAsyncHandler(async (req, res) => {
   res.status(201).json({ status: true, message: `User is created!`, data: savedUser });
 });
 
-const verifyOTP = expressAsyncHandler(async (req, res) => {
+const verifyOTP = asyncHandler(async (req, res) => {
   const { email, otp } = req.body;
 
   if (!otp) {
@@ -75,9 +82,9 @@ const verifyOTP = expressAsyncHandler(async (req, res) => {
   }
 });
 
-const loginUser = expressAsyncHandler(async (req, res) => {
+const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
-  sendEmail();
+
   if (!email || !password) {
     res.status(400);
     throw new Error('Email and Password are mandatory!');
@@ -144,7 +151,7 @@ const loginUser = expressAsyncHandler(async (req, res) => {
   throw new Error('Invalid Credentials!');
 });
 
-const logoutUser = expressAsyncHandler(async (req, res) => {
+const logoutUser = asyncHandler(async (req, res) => {
   const { cookies } = req;
 
   if (!cookies?.jwt) {

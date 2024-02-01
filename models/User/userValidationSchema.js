@@ -1,10 +1,12 @@
 const Joi = require('joi');
-const { PASSWORD_REGEX } = require('../../../client/src/Lib/Constants.cjs');
+const { PASSWORD_REGEX } = require('../../utils/regex');
 
 const userValidationSchema = Joi.object({
-  name: Joi.string().min(3).max(40).required(),
+  name: Joi.string().trim().min(3).max(40).required(),
   email: Joi.string().email().required(),
-  password: Joi.string().pattern(PASSWORD_REGEX),
+  password: Joi.string()
+    .pattern(PASSWORD_REGEX)
+    .message('Password needs to have minimum eight characters, at least one letter and one number'),
   address: Joi.object({
     street: Joi.string().required(),
     city: Joi.string().required(),
