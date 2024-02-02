@@ -2,7 +2,13 @@ const jsonParser = (keysToParse) => (req, res, next) => {
   try {
     keysToParse.forEach((key) => {
       if (req.body[key] && typeof req.body[key] === 'string') {
-        req.body[key] = JSON.parse(req.body[key]);
+        const parsedJson = JSON.parse(req.body[key]);
+
+        if (parsedJson && typeof parsedJson === 'object') {
+          req.body[key] = parsedJson;
+        } else {
+          throw new Error(`Invalid JSON in ${key}`);
+        }
       }
     });
 
@@ -11,11 +17,7 @@ const jsonParser = (keysToParse) => (req, res, next) => {
     next();
   } catch (error) {
     console.error('Error parsing JSON:', error);
-    next({
-      status: 400,
-      message: `Error parsing JSON for key: ${error.key || 'unknown'}`,
-      error: error.message,
-    });
+    next(error);
   }
 };
 

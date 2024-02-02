@@ -7,13 +7,14 @@ const userValidationSchema = Joi.object({
   password: Joi.string()
     .pattern(PASSWORD_REGEX)
     .message('Password needs to have minimum eight characters, at least one letter and one number'),
+  profile: Joi.string().required(),
   address: Joi.object({
     street: Joi.string().required(),
     city: Joi.string().required(),
     state: Joi.string().required(),
     country: Joi.string().required(),
     code: Joi.string().required(),
-  }),
+  }).required(),
 });
 
 module.exports = { userValidationSchema };

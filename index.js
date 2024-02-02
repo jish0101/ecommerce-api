@@ -21,12 +21,10 @@ const server = http.createServer(app);
 connectDB();
 
 // routes
-const userRouter = require('./routers/users/usersRouter');
 const authRouter = require('./routers/auth/authRouter');
 const refreshRouter = require('./routers/auth/refresh');
 
 app.set('view engine', 'ejs');
-app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use(credentials);
 app.use(cors(corsOptions));
 app.use(morgan('common'));
@@ -34,19 +32,19 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+app.use('/auth', authRouter);
+app.use('/refresh', refreshRouter);
+
+app.use(verifyJWT);
+app.use('/public', express.static(path.join(__dirname, 'public')));
 app.get('/', (req, res) => {
   res.render(path.join(__dirname, 'views', 'apiHome.ejs'));
 });
 
-app.use('/auth', authRouter);
-app.use('/refresh', refreshRouter);
-app.use(verifyJWT);
-app.use('/users', userRouter);
-
-// app.use(schemaErrorHandler);
-// app.use(notFound);
+app.use(notFound);
+app.use(schemaErrorHandler);
 app.use(errorHandler);
 
 mongoose.connection.once('open', () => {
-  server.listen(PORT, () => log(`Server is running on URL => ${BASE_URL}:${PORT}`));
+  server.listen(PORT, () => log(`Server is running on URL => ${BASE_URL}`));
 });

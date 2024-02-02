@@ -49,9 +49,7 @@ const sendEmail = async (to, templateName, data) => {
     }
 
     const templatePath = path.join(__dirname, '..', 'views', 'emailTemplates', templateInfo.path);
-
     const html = await renderTemplate(templatePath, data);
-
     const mailOptions = {
       from: SMTP_FROM,
       to,
@@ -59,9 +57,7 @@ const sendEmail = async (to, templateName, data) => {
       html,
     };
 
-    const info = await transport.sendMail(mailOptions);
-
-    console.log(`Email Sent => ${info.response}`);
+    await transport.sendMail(mailOptions);
     return true;
   } catch (error) {
     console.log('🚀 ~ sendEmail ~ error:', error);

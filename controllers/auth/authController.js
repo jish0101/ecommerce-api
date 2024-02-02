@@ -1,30 +1,18 @@
-const jwt = require('jsonwebtoken');
 const asyncHandler = require('express-async-handler');
 const bcrypt = require('bcrypt');
 const User = require('../../models/User/User');
 const { createToken } = require('../../utils/utility');
-const { requestOTP } = require('../../utils/utility');
 const { sendEmail, templateList } = require('../../utils/emailService');
-const { BASE_URL, PORT } = require('../../utils/globals');
 
 const createUser = asyncHandler(async (req, res) => {
-  const { name, email, password, address } = req.body;
-  const profile = `${BASE_URL}:${PORT}/public/images/${req?.file?.filename})}`;
+  const { name, email, password, address, profile, tempOtp } = req.body;
   const existingUser = await User.findOne({ email });
 
   if (existingUser) {
     res.status(400);
     throw new Error('Email already registered');
   }
-  const tempOtp = requestOTP(10);
   const hashedPassword = await bcrypt.hash(password, 10);
-
-  const isEmailSent = await sendEmail(email, templateList?.welcome?.name, { username: name });
-  const isOTPSent = await sendEmail(email, templateList?.otp?.name, { otp: tempOtp?.otp });
-
-  if (!isEmailSent || !isOTPSent) {
-    throw new Error('Error sending OTP to Provided Email!');
-  }
 
   const user = new User({
     name,
@@ -35,51 +23,15 @@ const createUser = asyncHandler(async (req, res) => {
     password: hashedPassword,
   });
 
+  const isEmailSent = await sendEmail(email, templateList?.welcome?.name, { username: name });
+  const isOTPSent = await sendEmail(email, templateList?.otp?.name, { otp: tempOtp?.otp });
+
+  if (!isEmailSent || !isOTPSent) {
+    throw new Error('Error sending otp to the provided email!');
+  }
   const savedUser = await user.save();
 
   res.status(201).json({ status: true, message: `User is created!`, data: savedUser });
-});
-
-const verifyOTP = asyncHandler(async (req, res) => {
-  const { email, otp } = req.body;
-
-  if (!otp) {
-    res.status(400);
-    throw new Error('No OTP Provided!');
-  }
-
-  if (!email) {
-    res.status(400);
-    throw new Error('Provide Email!');
-  }
-
-  const existingUser = await User.findOne({ email });
-
-  if (!existingUser) {
-    res.status(404);
-    throw new Error('No user found with this email!');
-  }
-
-  if (existingUser.tempOtp?.otp === parseInt(otp, 10)) {
-    if (Date.now() > existingUser.tempOtp?.expiredAfter) {
-      throw new Error('OTP has been expired!');
-    }
-
-    const newUser = await User.findOneAndUpdate(
-      { email: existingUser?.email },
-      { isVerifiedEmail: true },
-      { new: true },
-    );
-
-    await newUser.save();
-    res.json({
-      status: true,
-      message: `User is validated!`,
-    });
-  } else {
-    res.status(400);
-    throw new Error('Invalid OTP!');
-  }
 });
 
 const loginUser = asyncHandler(async (req, res) => {
@@ -181,9 +133,30 @@ const logoutUser = asyncHandler(async (req, res) => {
   return res.sendStatus(204);
 });
 
+const verifyEmail = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  const newUser = await User.findOneAndUpdate({ email }, { isVerifiedEmail: true }, { new: true });
+
+  await newUser.save();
+  res.json({
+    status: true,
+    message: `User is validated!`,
+  });
+});
+
+const newPasswordHandler = asyncHandler(async (req, res) => {
+  const { email, newPassword } = req.body;
+  const password = await bcrypt.hash(newPassword, 10);
+  const newUser = await User.findOneAndUpdate({ email }, { password }, { new: true });
+
+  res.status(200);
+  res.json({ status: true, user: newUser });
+});
+
 module.exports = {
   createUser,
   loginUser,
   logoutUser,
-  verifyOTP,
+  verifyEmail,
+  newPasswordHandler,
 };

@@ -17,7 +17,7 @@ const handleRefreshToken = asyncHandler(async (req, res) => {
     return res.sendStatus(403);
   }
 
-  jwt.verify(refreshToken, secret?.refreshTokenSec, (err, decoded) => {
+  return jwt.verify(refreshToken, secret?.refreshTokenSec, (err, decoded) => {
     if (err || decoded.name !== foundUser.name) {
       return res.sendStatus(403);
     }

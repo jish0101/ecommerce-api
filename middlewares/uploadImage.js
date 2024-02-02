@@ -1,7 +1,10 @@
+const expressAsyncHandler = require('express-async-handler');
 const multer = require('multer');
+const { validateMIMEType } = require('validate-image-type');
 const sharp = require('sharp');
 const path = require('path');
 const fs = require('fs');
+const { PORT, BASE_URL } = require('../utils/globals');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -13,18 +16,25 @@ const storage = multer.diskStorage({
   },
 });
 
-const multerFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith('image')) {
-    cb(null, true);
-  } else {
-    cb({ message: 'Unsupported file format' }, false);
-  }
-};
-
 const uploadPhoto = multer({
   storage,
-  fileFilter: multerFilter,
   limits: { fileSize: 5000000 },
+});
+
+const imageValidator = expressAsyncHandler(async (req, res, next) => {
+  if (req.file) {
+    const validationResult = await validateMIMEType(req.file.path, {
+      originalFilename: req.file.originalname,
+      allowMimeTypes: ['image/jpeg', 'image/png'],
+    });
+    if (!validationResult.ok) {
+      throw new Error('Validaton Error: This image is not valid!');
+    }
+  }
+  const fileName = req?.file?.filename || 'userplaceholder.png';
+  const profile = `${BASE_URL}/public/images/${fileName})}`;
+  req.body.profile = profile; // setting profile as a link for further handling
+  next();
 });
 
 const productImgResize = async (req, res, next) => {
@@ -56,4 +66,4 @@ const blogImgResize = async (req, res, next) => {
   );
   return next();
 };
-module.exports = { uploadPhoto, productImgResize, blogImgResize };
+module.exports = { uploadPhoto, productImgResize, blogImgResize, imageValidator };
