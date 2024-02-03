@@ -50,7 +50,7 @@ const requestOTP = asyncHandler(async (req, res, next) => {
   const { email } = req.body;
   const { type } = req.query;
 
-  if (email) {
+  if (email && type) {
     if (type === OTP_REQ_TYPES.forgotPassword) {
       const updatedUser = await User.findOneAndUpdate({ email }, { tempOtp });
       if (updatedUser) {

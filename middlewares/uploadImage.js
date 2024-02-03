@@ -4,7 +4,7 @@ const { validateMIMEType } = require('validate-image-type');
 const sharp = require('sharp');
 const path = require('path');
 const fs = require('fs');
-const { PORT, BASE_URL } = require('../utils/globals');
+const { BASE_URL } = require('../utils/globals');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -32,7 +32,7 @@ const imageValidator = expressAsyncHandler(async (req, res, next) => {
     }
   }
   const fileName = req?.file?.filename || 'userplaceholder.png';
-  const profile = `${BASE_URL}/public/images/${fileName})}`;
+  const profile = `${BASE_URL}/public/images/${fileName}`;
   req.body.profile = profile; // setting profile as a link for further handling
   next();
 });

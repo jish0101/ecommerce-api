@@ -17,4 +17,12 @@ const userValidationSchema = Joi.object({
   }).required(),
 });
 
-module.exports = { userValidationSchema };
+const userIdSchema = Joi.object({
+  id: Joi.string().hex().required().length(24).messages({
+    'any.required': 'User ID is required',
+    'string.hex': 'User ID is invalid',
+    'string.length': 'Invalid user id',
+  }),
+});
+
+module.exports = { userValidationSchema, userIdSchema };

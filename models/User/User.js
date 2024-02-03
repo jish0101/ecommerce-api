@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { STATUSTYPES, USER_ROLES } = require('../../utils/globals');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -30,17 +31,22 @@ const userSchema = new mongoose.Schema({
   },
   profile: {
     type: String,
-    required: true,
+    require: true,
   },
   isVerifiedEmail: {
     type: Boolean,
-    require: true,
     default: false,
+    require: true,
+  },
+  status: {
+    type: String,
+    default: STATUSTYPES.active,
+    require: true,
   },
   role: {
-    type: String,
-    enum: ['member', 'moderator', 'admin', 'super-admin'],
-    default: 'member',
+    type: Number,
+    enum: Object.values(USER_ROLES),
+    default: USER_ROLES.member,
   },
   createdAt: {
     type: Date,
@@ -49,7 +55,7 @@ const userSchema = new mongoose.Schema({
   },
   refreshToken: {
     type: String,
-    required: false,
+    require: false,
   },
 });
 

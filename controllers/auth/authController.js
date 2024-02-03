@@ -2,37 +2,6 @@ const asyncHandler = require('express-async-handler');
 const bcrypt = require('bcrypt');
 const User = require('../../models/User/User');
 const { createToken } = require('../../utils/utility');
-const { sendEmail, templateList } = require('../../utils/emailService');
-
-const createUser = asyncHandler(async (req, res) => {
-  const { name, email, password, address, profile, tempOtp } = req.body;
-  const existingUser = await User.findOne({ email });
-
-  if (existingUser) {
-    res.status(400);
-    throw new Error('Email already registered');
-  }
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  const user = new User({
-    name,
-    email,
-    address,
-    tempOtp,
-    profile,
-    password: hashedPassword,
-  });
-
-  const isEmailSent = await sendEmail(email, templateList?.welcome?.name, { username: name });
-  const isOTPSent = await sendEmail(email, templateList?.otp?.name, { otp: tempOtp?.otp });
-
-  if (!isEmailSent || !isOTPSent) {
-    throw new Error('Error sending otp to the provided email!');
-  }
-  const savedUser = await user.save();
-
-  res.status(201).json({ status: true, message: `User is created!`, data: savedUser });
-});
 
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -44,13 +13,13 @@ const loginUser = asyncHandler(async (req, res) => {
   const foundUser = await User.findOne({ email });
 
   if (!foundUser) {
-    res.status(401);
-    throw new Error('No user found!');
+    res.status(404);
+    throw new Error('No user found');
   }
 
   if (!foundUser.isVerifiedEmail) {
     res.status(401);
-    throw new Error('Email is not verified yet!');
+    throw new Error('Email is not verified yet');
   }
 
   const match = await bcrypt.compare(password, foundUser.password);
@@ -59,7 +28,7 @@ const loginUser = asyncHandler(async (req, res) => {
     const accessToken = createToken({
       data: {
         email: foundUser?.email,
-        roles: foundUser?.role,
+        role: foundUser?.role,
         name: foundUser?.name,
       },
       type: 1,
@@ -68,7 +37,7 @@ const loginUser = asyncHandler(async (req, res) => {
     const refreshToken = createToken({
       data: {
         email: foundUser?.email,
-        roles: foundUser?.role,
+        role: foundUser?.role,
         name: foundUser?.name,
       },
       type: 2,
@@ -154,7 +123,6 @@ const newPasswordHandler = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
-  createUser,
   loginUser,
   logoutUser,
   verifyEmail,
