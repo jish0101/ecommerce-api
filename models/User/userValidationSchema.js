@@ -8,6 +8,7 @@ const userValidationSchema = Joi.object({
     .pattern(PASSWORD_REGEX)
     .message('Password needs to have minimum eight characters, at least one letter and one number'),
   profile: Joi.string().required(),
+  status: Joi.string().max(10).required(),
   address: Joi.object({
     street: Joi.string().required(),
     city: Joi.string().required(),

@@ -19,6 +19,7 @@ const verifyJWT = (req, res, next) => {
     }
 
     req.user = decoded.name;
+    req.email = decoded.email;
     req.role = parseInt(decoded.role, 10);
     return next();
   });

@@ -36,10 +36,23 @@ const createUser = expressAsyncHandler(async (req, res) => {
 });
 
 const updateUser = expressAsyncHandler(async (req, res) => {
-  const { name, email, password, address, tempOtp, profile } = req.body;
   const { id } = req.query;
-  const existingUser = await User.findById(id);
+  const { name, email, password, address, tempOtp, profile, status } = req.body;
 
+  if (email) {
+    console.log('🚀 ~ updateUser ~ id:', id);
+    const isDuplicate = await User.findOne({
+      _id: { $ne: id },
+      email,
+      // status: { $ne: STATUSTYPES.deleted },
+    });
+    console.log('🚀 ~ updateUser ~ isDuplicate:', isDuplicate);
+    if (isDuplicate) {
+      throw Error('Email already registered');
+    }
+  }
+
+  const existingUser = await User.findById(id);
   if (!existingUser) {
     res.status(400);
     throw new Error('No user found with this email.');
@@ -48,9 +61,8 @@ const updateUser = expressAsyncHandler(async (req, res) => {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   if (email !== existingUser?.email) {
-    const isEmailSent = await sendEmail(email, templateList?.welcome?.name, { username: name });
     const isOTPSent = await sendEmail(email, templateList?.otp?.name, { otp: tempOtp?.otp });
-    if (!isEmailSent || !isOTPSent) {
+    if (!isOTPSent) {
       throw new Error('Error sending otp to the provided email!');
     }
   }
@@ -60,6 +72,7 @@ const updateUser = expressAsyncHandler(async (req, res) => {
     email,
     address,
     tempOtp,
+    status,
     isVerifiedEmail: email === existingUser?.email,
     profile: updatedProfile,
     password: hashedPassword,
@@ -97,7 +110,7 @@ const getUsers = expressAsyncHandler(async (req, res) => {
   const skip = (pageNum - 1) * size;
 
   const totalRecords = await User.countDocuments(query);
-  const foundUsers = await User.find(query).skip(skip).limit(size);
+  const foundUsers = await User.find(query).skip(skip).limit(size).sort({ createdAt: 1 });
 
   if (foundUsers.length > 0) {
     const totalPages = Math.ceil(totalRecords / size);

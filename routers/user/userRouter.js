@@ -28,12 +28,13 @@ router
   )
   .get(verifyJWT, roleHandler(adminRoles), getUsers)
   .put(
-    // verifyJWT,
+    verifyJWT,
     uploadPhoto.single('profile'),
     jsonParser(['address']),
     imageValidator,
-    schemaValidator.body(userValidationSchema),
     schemaValidator.query(userIdSchema),
+    schemaValidator.body(userValidationSchema),
+    requestOTP,
     updateUser,
   )
   .delete(verifyJWT, schemaValidator.query(userIdSchema), deleteUser);
