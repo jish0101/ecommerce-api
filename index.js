@@ -12,6 +12,7 @@ const cookieParser = require('cookie-parser');
 const { notFound, errorHandler, schemaErrorHandler } = require('./middlewares/errorHandler');
 const credentials = require('./middlewares/credentials');
 const corsOptions = require('./utils/corsOptions');
+// const Razorpay = require('razorpay');
 const connectDB = require('./utils/dbConnect');
 const verifyJWT = require('./middlewares/verifyJWT');
 const { PORT, BASE_URL } = require('./utils/globals');
@@ -38,6 +39,11 @@ app.use(cookieParser());
 app.use('/auth', authRouter);
 app.use('/refresh', refreshRouter);
 app.use('/user', userRouter);
+
+// const instance = new Razorpay({
+//   key_id: 'YOUR_KEY_ID',
+//   key_secret: 'YOUR_KEY_SECRET',
+// });
 
 // app.use(verifyJWT);
 app.use('/products', productsRouter);
