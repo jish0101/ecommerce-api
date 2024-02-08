@@ -53,6 +53,16 @@ const userSchema = new mongoose.Schema({
     default: Date.now,
     immutable: true,
   },
+  updatedAt: {
+    type: Date,
+    default: Date.now,
+    required: true,
+  },
+  updatedBy: {
+    type: mongoose.Schema.ObjectId,
+    required: true,
+    default: '',
+  },
   refreshToken: {
     type: String,
     require: false,

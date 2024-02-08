@@ -5,7 +5,7 @@ const { sendEmail, templateList } = require('../../utils/emailService');
 const { STATUSTYPES } = require('../../utils/globals');
 
 const createUser = expressAsyncHandler(async (req, res) => {
-  const { name, email, password, address, profile, tempOtp } = req.body;
+  const { name, email, password, address, image, tempOtp } = req.body;
   const existingUser = await User.findOne({ email });
 
   if (existingUser) {
@@ -20,7 +20,7 @@ const createUser = expressAsyncHandler(async (req, res) => {
     address,
     tempOtp,
     status: STATUSTYPES.inactive,
-    profile,
+    profile: image,
     password: hashedPassword,
   });
 
@@ -37,16 +37,14 @@ const createUser = expressAsyncHandler(async (req, res) => {
 
 const updateUser = expressAsyncHandler(async (req, res) => {
   const { id } = req.query;
-  const { name, email, password, address, tempOtp, profile, status } = req.body;
+  const { name, email, password, address, tempOtp, image, status } = req.body;
 
   if (email) {
-    console.log('🚀 ~ updateUser ~ id:', id);
     const isDuplicate = await User.findOne({
       _id: { $ne: id },
       email,
       // status: { $ne: STATUSTYPES.deleted },
     });
-    console.log('🚀 ~ updateUser ~ isDuplicate:', isDuplicate);
     if (isDuplicate) {
       throw Error('Email already registered');
     }
@@ -57,7 +55,7 @@ const updateUser = expressAsyncHandler(async (req, res) => {
     res.status(400);
     throw new Error('No user found with this email.');
   }
-  const updatedProfile = req?.file ? profile : existingUser?.profile;
+  const updatedProfile = req?.file ? image : existingUser?.profile;
   const hashedPassword = await bcrypt.hash(password, 10);
 
   if (email !== existingUser?.email) {
@@ -98,8 +96,8 @@ const getUsers = expressAsyncHandler(async (req, res) => {
     query.name = { $regex: new RegExp(name, 'i') };
   }
 
-  if (status) {
-    if (allowedStatusToSend.includes(status)) query.status = status;
+  if (status && allowedStatusToSend.includes(status)) {
+    query.status = status;
   }
 
   if (id) {

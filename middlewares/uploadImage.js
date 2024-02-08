@@ -32,8 +32,8 @@ const imageValidator = expressAsyncHandler(async (req, res, next) => {
     }
   }
   const fileName = req?.file?.filename || 'userplaceholder.png';
-  const profile = `${BASE_URL}/public/images/${fileName}`;
-  req.body.profile = profile; // setting profile as a link for further handling
+  const image = `${BASE_URL}/public/images/${fileName}`;
+  req.body.image = image; // setting profile as a link for further handling
   next();
 });
 
