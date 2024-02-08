@@ -36,8 +36,7 @@ const createUser = expressAsyncHandler(async (req, res) => {
 });
 
 const updateUser = expressAsyncHandler(async (req, res) => {
-  const { id } = req.query;
-  const { name, email, password, address, tempOtp, image, status } = req.body;
+  const { id, name, email, password, address, tempOtp, image, status } = req.body;
 
   if (email) {
     const isDuplicate = await User.findOne({

@@ -32,11 +32,11 @@ router
     uploadPhoto.single('profile'),
     jsonParser(['address']),
     imageValidator,
-    schemaValidator.query(userIdSchema),
+    schemaValidator.body(userIdSchema),
     schemaValidator.body(userValidationSchema),
     requestOTP,
     updateUser,
   )
-  .delete(verifyJWT, schemaValidator.query(userIdSchema), deleteUser);
+  .delete(verifyJWT, roleHandler(adminRoles), schemaValidator.query(userIdSchema), deleteUser);
 
 module.exports = router;

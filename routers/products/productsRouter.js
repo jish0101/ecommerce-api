@@ -6,13 +6,32 @@ const {
   deleteProduct,
 } = require('../../controllers/products/productController');
 const jsonParser = require('../../middlewares/jsonParser');
-const { uploadPhoto } = require('../../middlewares/uploadImage');
+const roleHandler = require('../../middlewares/roleHandler');
+const { schemaValidator } = require('../../middlewares/schemaValidator');
+const { uploadPhoto, imageValidator } = require('../../middlewares/uploadImage');
+const { userIdSchema } = require('../../models/User/userValidationSchema');
+const { USER_ROLES } = require('../../utils/globals');
+
+const adminRoles = Object.values(USER_ROLES).filter((v) => v > USER_ROLES.moderator);
 
 router
   .route('/')
-  .post(createProduct)
+  .post(
+    roleHandler(adminRoles),
+    uploadPhoto.single('image'),
+    imageValidator,
+    jsonParser(['category']),
+    createProduct,
+  )
   .get(getProducts)
-  .put(uploadPhoto.single('image'), jsonParser(['category']), updateProduct)
-  .delete(deleteProduct);
+  .put(
+    roleHandler(adminRoles),
+    uploadPhoto.single('image'),
+    imageValidator,
+    jsonParser(['category']),
+    schemaValidator.body(userIdSchema),
+    updateProduct,
+  )
+  .delete(roleHandler(adminRoles), deleteProduct);
 
 module.exports = router;

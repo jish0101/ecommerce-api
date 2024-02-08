@@ -45,10 +45,14 @@ const getProducts = expressAsyncHandler(async (req, res) => {
   if (id) {
     // eslint-disable-next-line no-underscore-dangle
     query._id = id;
+    const foundRes = await Product.findById(id);
+    if (foundRes) {
+      return res.json({ status: true, data: foundRes });
+    }
+    throw Error('No product found with provided Id');
   }
 
   const skip = (pageNum - 1) * size;
-
   const totalRecords = await Product.countDocuments(query);
   const foundProducts = await Product.find(query).skip(skip).limit(size).sort({ createdAt: 1 });
 
@@ -79,8 +83,8 @@ const updateProduct = expressAsyncHandler(async (req, res) => {
       name,
       image: isImageUpdate ? image : undefined,
       price,
-      stock,
       category,
+      stock,
       currency: defaultProductCurrency,
       status,
       updatedAt,
@@ -95,9 +99,17 @@ const updateProduct = expressAsyncHandler(async (req, res) => {
   });
 });
 
-const deleteProduct = expressAsyncHandler(async (req, res) =>
-  res.json({ status: true, message: 'Successfully deleted a product' }),
-);
+const deleteProduct = expressAsyncHandler(async (req, res) => {
+  const { id } = req.query;
+
+  const updatedProduct = await Product.findByIdAndUpdate(id, { status: STATUSTYPES.deleted });
+
+  if (updatedProduct) {
+    return res.json({ status: true, message: 'Successfully deleted a product' });
+  }
+
+  throw Error('Could not update product');
+});
 
 module.exports = {
   createProduct,
