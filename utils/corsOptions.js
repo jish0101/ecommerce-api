@@ -1,4 +1,4 @@
-const allowedList = ['http://localhost:8000/'];
+const allowedList = ['http://localhost:8000/', 'http://127.0.0.1:5500'];
 
 const corsOptions = {
   origin: (origin, callback) => {
