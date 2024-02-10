@@ -1,35 +1,16 @@
 const crypto = require('crypto');
-const Razorpay = require('razorpay');
-const { CLIENT_BASE_URL, RAZORPAY_KEYSECRET, RAZORPAY_KEYID } = require('../../utils/globals');
+const expressAsyncHandler = require('express-async-handler');
+// const Razorpay = require('razorpay');
+const { CLIENT_BASE_URL, RAZORPAY_KEYSECRET } = require('../../utils/globals');
 const { PaymentModel } = require('../../models/Payments/PaymentModel');
 
-const razorpayInstance = new Razorpay({
-  key_id: RAZORPAY_KEYID,
-  key_secret: RAZORPAY_KEYSECRET,
+const getPayments = expressAsyncHandler(async (req, res) => {
+  const payments = await PaymentModel.find();
+
+  res.json({ status: true, data: payments });
 });
 
-const checkout = async (req, res) => {
-  const { amount } = req.body;
-
-  if (!amount) {
-    return res.status(400).json({
-      success: false,
-      message: 'Amount is required',
-    });
-  }
-  const options = {
-    amount: +amount * 100,
-    currency: 'INR',
-  };
-
-  const order = await razorpayInstance.orders.create(options);
-  return res.status(200).json({
-    success: true,
-    clientSecret: order,
-  });
-};
-
-const paymentVerification = async (req, res) => {
+const verifyPayments = async (req, res) => {
   const {
     razorpay_order_id: orderId,
     razorpay_payment_id: paymentId,
@@ -63,12 +44,12 @@ const paymentVerification = async (req, res) => {
 const getKey = async (req, res) => {
   res.status(200).json({
     status: true,
-    key: RAZORPAY_KEYSECRET,
+    data: RAZORPAY_KEYSECRET,
   });
 };
 
 module.exports = {
-  checkout,
-  paymentVerification,
+  verifyPayments,
   getKey,
+  getPayments,
 };

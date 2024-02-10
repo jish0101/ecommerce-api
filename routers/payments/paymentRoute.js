@@ -1,16 +1,14 @@
 const express = require('express');
 const {
-  checkout,
-  paymentVerification,
+  verifyPayments,
   getKey,
+  getPayments,
 } = require('../../controllers/payments/paymentController');
 
 const router = express.Router();
 
-router.route('/checkout').post(checkout);
-
-router.route('/paymentverification').post(paymentVerification);
-
+router.post('/paymentverification', verifyPayments);
+router.get('/getPayments', getPayments);
 router.get('/getKey', getKey);
 
 module.exports = router;

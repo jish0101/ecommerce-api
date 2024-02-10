@@ -59,8 +59,7 @@ const userSchema = new mongoose.Schema({
     required: true,
   },
   updatedBy: {
-    type: mongoose.Schema.ObjectId,
-    required: true,
+    type: String,
     default: '',
   },
   refreshToken: {

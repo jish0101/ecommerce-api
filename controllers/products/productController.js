@@ -21,6 +21,9 @@ const createProduct = expressAsyncHandler(async (req, res) => {
 const getProducts = expressAsyncHandler(async (req, res) => {
   const { id, name, categoryId, status, page = 1, rowCount = 10 } = req.query;
 
+  // const result = await Product.find({}, { _id: 1 }).limit(3);
+  // return res.json({ data: result });
+
   const pageNum = parseInt(page, 10);
   const size = parseInt(rowCount, 10);
 

@@ -27,6 +27,7 @@ const productsRouter = require('./routers/products/productsRouter');
 const refreshRouter = require('./routers/auth/refresh');
 const userRouter = require('./routers/user/userRouter');
 const paymentRoute = require('./routers/payments/paymentRoute');
+const orderRouter = require('./routers/orders/orderRouter');
 
 app.set('view engine', 'ejs');
 app.use(credentials);
@@ -39,10 +40,11 @@ app.use(cookieParser());
 app.use('/auth', authRouter);
 app.use('/refresh', refreshRouter);
 app.use('/user', userRouter);
-app.use('/api', paymentRoute);
+app.use('/payment', paymentRoute);
 
-// app.use(verifyJWT);
+app.use(verifyJWT);
 app.use('/products', productsRouter);
+app.use('/orders', orderRouter);
 app.use('/public', express.static(path.join(__dirname, 'public')));
 app.get('/', (req, res) => {
   res.render(path.join(__dirname, 'views', 'apiHome.ejs'));

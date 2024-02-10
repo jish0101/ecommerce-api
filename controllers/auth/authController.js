@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 const asyncHandler = require('express-async-handler');
 const bcrypt = require('bcrypt');
 const User = require('../../models/User/User');
@@ -27,6 +28,7 @@ const loginUser = asyncHandler(async (req, res) => {
   if (match === true) {
     const accessToken = createToken({
       data: {
+        userId: foundUser?._id,
         email: foundUser?.email,
         role: foundUser?.role,
         name: foundUser?.name,
@@ -36,6 +38,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const refreshToken = createToken({
       data: {
+        userId: foundUser?._id,
         email: foundUser?.email,
         role: foundUser?.role,
         name: foundUser?.name,
