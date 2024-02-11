@@ -55,6 +55,7 @@
     },
     "rules": {
       "linebreak-style": "off",
+      "no-underscore-dangle": "off",
       "no-console": "off",
       "prettier/prettier": [
         "error",

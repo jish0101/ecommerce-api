@@ -28,6 +28,7 @@ const refreshRouter = require('./routers/auth/refresh');
 const userRouter = require('./routers/user/userRouter');
 const paymentRoute = require('./routers/payments/paymentRoute');
 const orderRouter = require('./routers/orders/orderRouter');
+const addressRouter = require('./routers/address/addressRouter');
 
 app.set('view engine', 'ejs');
 app.use(credentials);
@@ -40,9 +41,10 @@ app.use(cookieParser());
 app.use('/auth', authRouter);
 app.use('/refresh', refreshRouter);
 app.use('/user', userRouter);
-app.use('/payment', paymentRoute);
 
 app.use(verifyJWT);
+app.use('/payment', paymentRoute);
+app.use('/address', addressRouter);
 app.use('/products', productsRouter);
 app.use('/orders', orderRouter);
 app.use('/public', express.static(path.join(__dirname, 'public')));

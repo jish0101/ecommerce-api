@@ -46,7 +46,6 @@ const getProducts = expressAsyncHandler(async (req, res) => {
   }
 
   if (id) {
-    // eslint-disable-next-line no-underscore-dangle
     query._id = id;
     const foundRes = await Product.findById(id);
     if (foundRes) {

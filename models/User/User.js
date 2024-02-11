@@ -19,11 +19,7 @@ const userSchema = new mongoose.Schema({
     minlength: 8,
   },
   address: {
-    street: String,
-    city: String,
-    state: String,
-    country: String,
-    code: String,
+    type: mongoose.Schema.ObjectId,
   },
   tempOtp: {
     otp: Number,
