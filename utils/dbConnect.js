@@ -7,7 +7,7 @@ const connectDB = async () => {
   try {
     await mongoose.connect(URI);
   } catch (error) {
-    throw Error('Server Error!');
+    throw Error(error);
   }
 };
 module.exports = connectDB;

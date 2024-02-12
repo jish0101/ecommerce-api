@@ -22,8 +22,14 @@ const createAddress = expressAsyncHandler(async (req, res) => {
 });
 
 const updateAddress = expressAsyncHandler(async (req, res) => {
-  const { id, street, city, state, country, code, status, isPrimary } = req.body;
   const { userId } = req;
+  let newStatus;
+  const { id, street, city, state, country, code, status, isPrimary } = req.body;
+  const allowedStatuses = [STATUSTYPES.active, STATUSTYPES.inactive];
+
+  if (allowedStatuses.includes(status)) {
+    newStatus = status;
+  }
 
   if (isPrimary === 'true' || isPrimary === true) {
     await Address.findOneAndUpdate(
@@ -35,7 +41,7 @@ const updateAddress = expressAsyncHandler(async (req, res) => {
 
   const updatedAddress = await Address.findByIdAndUpdate(
     id,
-    { street, city, state, country, code, isPrimary },
+    { street, city, state, country, code, isPrimary, status: newStatus },
     { new: true },
   );
 

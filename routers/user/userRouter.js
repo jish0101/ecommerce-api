@@ -20,7 +20,6 @@ router
   .route('/')
   .post(
     uploadPhoto.single('profile'),
-    jsonParser(['address']),
     imageValidator,
     schemaValidator.body(userValidationSchema),
     requestOTP,
@@ -30,7 +29,6 @@ router
   .put(
     verifyJWT,
     uploadPhoto.single('profile'),
-    jsonParser(['address']),
     imageValidator,
     schemaValidator.body(userIdSchema),
     schemaValidator.body(userValidationSchema),
