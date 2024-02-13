@@ -65,6 +65,7 @@ const loginUser = asyncHandler(async (req, res) => {
       status: true,
       message: `${foundUser.name} is logged-in.`,
       data: {
+        id: foundUser?._id,
         name: foundUser?.name,
         email: foundUser?.email,
         role: foundUser?.role,

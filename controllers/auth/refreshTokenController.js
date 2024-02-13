@@ -23,8 +23,9 @@ const handleRefreshToken = asyncHandler(async (req, res) => {
     }
     const accessToken = createToken({
       data: {
+        userId: foundUser?._id,
         email: foundUser?.email,
-        roles: foundUser?.role,
+        role: foundUser?.role,
         name: foundUser?.name,
       },
       type: 1,
@@ -34,8 +35,10 @@ const handleRefreshToken = asyncHandler(async (req, res) => {
       status: true,
       message: `${foundUser.name} is logged-in.`,
       data: {
+        id: foundUser?._id,
         name: foundUser?.name,
         email: foundUser?.email,
+        role: foundUser?.role,
         token: accessToken,
       },
     });
