@@ -8,12 +8,6 @@ const userValidationSchema = Joi.object({
     .pattern(PASSWORD_REGEX)
     .message('Password needs to have minimum eight characters, at least one letter and one number'),
   image: Joi.string().required(),
-  status: Joi.string().max(10).required(),
-  addressId: Joi.string().hex().length(24).messages({
-    'any.required': 'User ID is required',
-    'string.hex': 'User ID is invalid',
-    'string.length': 'Invalid user id',
-  }),
 });
 
 const userIdSchema = Joi.object({
