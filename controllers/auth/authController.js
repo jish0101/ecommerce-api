@@ -57,7 +57,7 @@ const loginUser = asyncHandler(async (req, res) => {
     res.cookie('jwt', refreshToken, {
       httpOnly: true,
       sameSite: 'None',
-      // secure: true,
+      secure: true,
       maxAge: 24 * 60 * 60 * 1000,
     });
 
@@ -67,6 +67,7 @@ const loginUser = asyncHandler(async (req, res) => {
       data: {
         name: foundUser?.name,
         email: foundUser?.email,
+        role: foundUser?.role,
         token: accessToken,
       },
     });
