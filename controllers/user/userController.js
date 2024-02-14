@@ -18,7 +18,7 @@ const createUser = expressAsyncHandler(async (req, res) => {
     name,
     email,
     tempOtp,
-    status: STATUSTYPES.inactive,
+    status: STATUSTYPES.active,
     profile: image,
     updatedBy: req.userId || '',
     password: hashedPassword,
