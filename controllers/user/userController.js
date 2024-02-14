@@ -5,7 +5,7 @@ const { sendEmail, templateList } = require('../../utils/emailService');
 const { STATUSTYPES } = require('../../utils/globals');
 
 const createUser = expressAsyncHandler(async (req, res) => {
-  const { name, email, password, address, image, tempOtp } = req.body;
+  const { name, email, password, image, tempOtp } = req.body;
   const existingUser = await User.findOne({ email });
 
   if (existingUser) {
@@ -17,9 +17,8 @@ const createUser = expressAsyncHandler(async (req, res) => {
   const user = new User({
     name,
     email,
-    address,
     tempOtp,
-    status: STATUSTYPES.inactive,
+    status: STATUSTYPES.active,
     profile: image,
     updatedBy: req.userId || '',
     password: hashedPassword,

@@ -18,9 +18,6 @@ const userSchema = new mongoose.Schema({
     required: true,
     minlength: 8,
   },
-  address: {
-    type: mongoose.Schema.ObjectId,
-  },
   tempOtp: {
     otp: Number,
     expiredAfter: Number,

@@ -57,5 +57,5 @@ app.use(schemaErrorHandler);
 app.use(errorHandler);
 
 mongoose.connection.once('open', async () => {
-  server.listen(PORT, () => log(`Server is running on URL => ${BASE_URL}`));
+  server.listen(PORT, () => log(`Server is running on URL => ${PORT}`));
 });

@@ -5,7 +5,7 @@ const {
   updateUser,
   deleteUser,
 } = require('../../controllers/user/userController');
-const jsonParser = require('../../middlewares/jsonParser');
+// const jsonParser = require('../../middlewares/jsonParser');
 const { requestOTP } = require('../../middlewares/otpHandler');
 const roleHandler = require('../../middlewares/roleHandler');
 const { schemaValidator } = require('../../middlewares/schemaValidator');
