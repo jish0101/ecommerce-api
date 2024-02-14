@@ -9,7 +9,7 @@ const createUser = expressAsyncHandler(async (req, res) => {
   const existingUser = await User.findOne({ email });
 
   if (existingUser) {
-    res.status(400);
+    res.status(409);
     throw new Error('Email already registered');
   }
   const hashedPassword = await bcrypt.hash(password, 10);
