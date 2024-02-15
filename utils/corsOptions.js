@@ -1,4 +1,8 @@
-const allowedList = ['http://localhost:8000', 'http://localhost:5173'];
+const allowedList = [
+  'http://localhost:8000',
+  'http://localhost:5173',
+  'https://ecommerce-client-murex.vercel.app',
+];
 
 const corsOptions = {
   origin: (origin, callback) => {
