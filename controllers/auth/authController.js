@@ -61,14 +61,17 @@ const loginUser = asyncHandler(async (req, res) => {
       maxAge: 24 * 60 * 60 * 1000,
     });
 
+    const { _id, name, role, profile } = foundUser;
+
     return res.json({
       status: true,
       message: `${foundUser.name} is logged-in.`,
       data: {
-        id: foundUser?._id,
-        name: foundUser?.name,
-        email: foundUser?.email,
-        role: foundUser?.role,
+        _id,
+        name,
+        email,
+        role,
+        profile,
         token: accessToken,
       },
     });

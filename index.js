@@ -14,7 +14,7 @@ const credentials = require('./middlewares/credentials');
 const { corsOptions } = require('./utils/corsOptions');
 const connectDB = require('./utils/dbConnect');
 const verifyJWT = require('./middlewares/verifyJWT');
-const { PORT, BASE_URL } = require('./utils/globals');
+const { PORT } = require('./utils/globals');
 
 const app = express();
 const server = http.createServer(app);
@@ -41,13 +41,13 @@ app.use(cookieParser());
 app.use('/auth', authRouter);
 app.use('/refresh', refreshRouter);
 app.use('/user', userRouter);
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
 app.use(verifyJWT);
 app.use('/payment', paymentRoute);
 app.use('/address', addressRouter);
 app.use('/products', productsRouter);
 app.use('/orders', orderRouter);
-app.use('/public', express.static(path.join(__dirname, 'public')));
 app.get('/', (req, res) => {
   res.render(path.join(__dirname, 'views', 'apiHome.ejs'));
 });
