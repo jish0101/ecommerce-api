@@ -10,7 +10,7 @@ const { validateOTP, requestOTP } = require('../../middlewares/otpHandler');
 const router = express.Router();
 
 router.post('/login', loginUser);
-router.get('/logout', logoutUser);
+router.post('/logout', logoutUser);
 router.post('/send-otp', requestOTP);
 router.post('/verify-email', validateOTP, verifyEmail);
 router.post('/forgot-password', validateOTP, newPasswordHandler);

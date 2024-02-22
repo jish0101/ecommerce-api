@@ -21,12 +21,14 @@ const handleRefreshToken = asyncHandler(async (req, res) => {
     if (err || decoded.name !== foundUser.name) {
       return res.sendStatus(403);
     }
+    const { _id, name, role, profile, email } = foundUser;
+
     const accessToken = createToken({
       data: {
-        userId: foundUser?._id,
-        email: foundUser?.email,
-        role: foundUser?.role,
-        name: foundUser?.name,
+        userId: _id,
+        email,
+        role,
+        name,
       },
       type: 1,
     });
@@ -35,11 +37,12 @@ const handleRefreshToken = asyncHandler(async (req, res) => {
       status: true,
       message: `${foundUser.name} is logged-in.`,
       data: {
-        id: foundUser?._id,
-        name: foundUser?.name,
-        email: foundUser?.email,
-        role: foundUser?.role,
+        _id,
+        name,
+        email,
+        role,
         token: accessToken,
+        profile,
       },
     });
   });
