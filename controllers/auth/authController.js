@@ -81,7 +81,6 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
-  console.log('logginout');
   const { cookies } = req;
 
   if (!cookies?.jwt) {
@@ -92,7 +91,6 @@ const logoutUser = asyncHandler(async (req, res) => {
   const foundUser = await User.findOne({ refreshToken });
 
   if (!foundUser) {
-    console.log('2');
     res.clearCookie('jwt', { httpOnly: true });
     return res.status(200).json({ status: true });
   }
@@ -109,7 +107,6 @@ const logoutUser = asyncHandler(async (req, res) => {
     sameSite: 'None',
     secure: true,
   });
-  console.log('3');
   return res.status(200).json({ status: true });
 });
 
