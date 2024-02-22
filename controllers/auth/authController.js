@@ -81,18 +81,20 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
+  console.log('logginout');
   const { cookies } = req;
 
   if (!cookies?.jwt) {
-    return res.sendStatus(204);
+    return res.status(200).json({ status: true });
   }
 
   const refreshToken = cookies.jwt;
   const foundUser = await User.findOne({ refreshToken });
 
   if (!foundUser) {
+    console.log('2');
     res.clearCookie('jwt', { httpOnly: true });
-    return res.sendStatus(204);
+    return res.status(200).json({ status: true });
   }
 
   const newUser = await User.findOneAndUpdate(
@@ -105,9 +107,10 @@ const logoutUser = asyncHandler(async (req, res) => {
   res.clearCookie('jwt', {
     httpOnly: true,
     sameSite: 'None',
-    // secure: true,
+    secure: true,
   });
-  return res.sendStatus(204);
+  console.log('3');
+  return res.status(200).json({ status: true });
 });
 
 const verifyEmail = asyncHandler(async (req, res) => {
