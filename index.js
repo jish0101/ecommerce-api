@@ -23,6 +23,7 @@ connectDB();
 
 // routes
 const authRouter = require('./routers/auth/authRouter');
+const productCategoryRouter = require('./routers/products/productCategory');
 const productsRouter = require('./routers/products/productsRouter');
 const refreshRouter = require('./routers/auth/refresh');
 const userRouter = require('./routers/user/userRouter');
@@ -44,6 +45,7 @@ app.use('/user', userRouter);
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
 app.use(verifyJWT);
+app.use('/product-category', productCategoryRouter);
 app.use('/payment', paymentRoute);
 app.use('/address', addressRouter);
 app.use('/products', productsRouter);

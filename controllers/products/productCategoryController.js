@@ -3,9 +3,9 @@ const { ProductCategory } = require('../../models/ProductCategory/ProductCategor
 const { STATUSTYPES } = require('../../utils/globals');
 
 const createProductCategory = expressAsyncHandler(async (req, res) => {
-  const { name } = req.body;
+  const { name, status } = req.body;
 
-  const productCategory = new ProductCategory({ name, status: STATUSTYPES.active });
+  const productCategory = new ProductCategory({ name, status });
   await productCategory.save();
 
   res.json({ status: true, message: 'Successfully created a product', data: productCategory });
@@ -83,7 +83,7 @@ const updateProductCategory = expressAsyncHandler(async (req, res) => {
 });
 
 const deleteProductCategory = expressAsyncHandler(async (req, res) => {
-  const { id } = req.query;
+  const { id } = req.body;
 
   const deletedProductCategory = await ProductCategory.findByIdAndUpdate(id, {
     status: STATUSTYPES.deleted,

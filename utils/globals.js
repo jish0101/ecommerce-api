@@ -30,6 +30,8 @@ const USER_ROLES = {
   'super-admin': 104,
 };
 
+const ADMIN_ROLES = Object.values(USER_ROLES).filter((v) => v > USER_ROLES.moderator);
+
 module.exports = {
   accessTokenSec,
   refreshTokenSec,
@@ -49,5 +51,6 @@ module.exports = {
 
   STATUSTYPES,
   USER_ROLES,
+  ADMIN_ROLES,
   OTP_REQ_TYPES,
 };

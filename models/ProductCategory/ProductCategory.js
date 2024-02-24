@@ -4,8 +4,13 @@ const { STATUSTYPES } = require('../../utils/globals');
 const categorySchema = new mongoose.Schema({
   name: {
     type: String,
-    status: STATUSTYPES.active,
+    unique: true,
     required: true,
+  },
+  status: {
+    type: String,
+    required: true,
+    default: STATUSTYPES.active,
   },
 });
 

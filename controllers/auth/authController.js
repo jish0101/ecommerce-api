@@ -107,7 +107,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     sameSite: 'None',
     secure: true,
   });
-  return res.status(200).json({ status: true });
+  return res.status(200).json({ status: true, message: 'Successfully loggedout.' });
 });
 
 const verifyEmail = asyncHandler(async (req, res) => {

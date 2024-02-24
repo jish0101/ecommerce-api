@@ -11,10 +11,9 @@ const roleHandler = require('../../middlewares/roleHandler');
 const { schemaValidator } = require('../../middlewares/schemaValidator');
 const { uploadPhoto, imageValidator } = require('../../middlewares/uploadImage');
 const verifyJWT = require('../../middlewares/verifyJWT');
-const { userValidationSchema, userIdSchema } = require('../../models/User/userValidationSchema');
-const { USER_ROLES } = require('../../utils/globals');
-
-const adminRoles = Object.values(USER_ROLES).filter((v) => v > USER_ROLES.moderator);
+const { idSchema } = require('../../models/CommonSchemas/IdSchema');
+const { userValidationSchema } = require('../../models/User/userValidationSchema');
+const { ADMIN_ROLES } = require('../../utils/globals');
 
 router
   .route('/')
@@ -25,16 +24,16 @@ router
     requestOTP,
     createUser,
   )
-  .get(verifyJWT, roleHandler(adminRoles), getUsers)
+  .get(verifyJWT, roleHandler(ADMIN_ROLES), getUsers)
   .put(
     verifyJWT,
     uploadPhoto.single('profile'),
     imageValidator,
-    schemaValidator.body(userIdSchema),
+    schemaValidator.body(idSchema),
     schemaValidator.body(userValidationSchema),
     requestOTP,
     updateUser,
   )
-  .delete(verifyJWT, roleHandler(adminRoles), schemaValidator.query(userIdSchema), deleteUser);
+  .delete(verifyJWT, roleHandler(ADMIN_ROLES), schemaValidator.query(idSchema), deleteUser);
 
 module.exports = router;
