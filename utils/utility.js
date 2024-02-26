@@ -11,7 +11,7 @@ function createToken({ data, type }) {
   }
 
   const token = jwt.sign(data, refreshTokenSec, {
-    expiresIn: '2d',
+    expiresIn: '1d',
   });
   return token;
 }
