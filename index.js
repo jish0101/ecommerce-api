@@ -44,15 +44,16 @@ app.use('/refresh', refreshRouter);
 app.use('/user', userRouter);
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
+app.get('/', (req, res) => {
+  res.render(path.join(__dirname, 'views', 'apiHome.ejs'));
+});
+
 app.use(verifyJWT);
 app.use('/product-category', productCategoryRouter);
 app.use('/payment', paymentRoute);
 app.use('/address', addressRouter);
 app.use('/products', productsRouter);
 app.use('/orders', orderRouter);
-app.get('/', (req, res) => {
-  res.render(path.join(__dirname, 'views', 'apiHome.ejs'));
-});
 
 app.use(notFound);
 app.use(schemaErrorHandler);

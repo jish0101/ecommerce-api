@@ -27,6 +27,20 @@ const productSchema = new mongoose.Schema({
     required: true,
     min: 0,
   },
+  productDescription: {
+    type: String,
+    required: true,
+    trim: true,
+    minLength: 3,
+    maxLength: 3000,
+  },
+  productMaterial: {
+    type: String,
+    required: true,
+    trim: true,
+    minLength: 3,
+    maxLength: 1000,
+  },
   category: categorySchema,
   status: {
     type: String,
