@@ -4,7 +4,6 @@ const { validateMIMEType } = require('validate-image-type');
 const sharp = require('sharp');
 const path = require('path');
 const fs = require('fs');
-const { BASE_URL } = require('../utils/globals');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {

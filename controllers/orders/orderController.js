@@ -45,8 +45,6 @@ const createOrder = expressAsyncHandler(async (req, res) => {
     }
   });
 
-  console.log('orderProducts', orderProducts);
-
   let order;
   if (orderProducts.length > 0) {
     order = await OrderModel.create({

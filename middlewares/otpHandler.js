@@ -13,7 +13,6 @@ const getOTP = (expirationTimeInMinutes = 10) => {
 
 const validateOTP = asyncHandler(async (req, res, next) => {
   const { email, otp } = req.body;
-  console.log('🚀 ~ validateOTP ~ email, otp:', email, otp);
 
   if (!otp) {
     res.status(400);
@@ -26,7 +25,6 @@ const validateOTP = asyncHandler(async (req, res, next) => {
   }
 
   const existingUser = await User.findOne({ email });
-  console.log('🚀 ~ validateOTP ~ existingUser:', existingUser);
 
   if (!existingUser) {
     res.status(404);

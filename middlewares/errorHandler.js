@@ -7,11 +7,10 @@ const notFound = (req, res, next) => {
 const schemaErrorHandler = (err, req, res, next) => {
   if (err && err.error && err.error.isJoi) {
     res.status(400).json({
-      type: err.type, // can be query or headers or body
+      type: err.type,
       message: err.error.toString(),
     });
   } else {
-    // pass on to another error handler
     next(err);
   }
 };
