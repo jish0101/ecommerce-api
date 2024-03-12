@@ -21,6 +21,9 @@ const userSchema = new mongoose.Schema({
   tempOtp: {
     otp: Number,
     expiredAfter: Number,
+    type: {
+      type: String,
+    },
   },
   profile: {
     type: String,
