@@ -14,7 +14,8 @@ const {
 } = process.env;
 
 const OTP_REQ_TYPES = {
-  forgotPassword: 'forgot-password',
+  'forgot-password': 'forgot-password',
+  'resend-otp': 'resend-otp',
 };
 
 const STATUSTYPES = {
