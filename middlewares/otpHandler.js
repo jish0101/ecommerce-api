@@ -8,7 +8,7 @@ const getOTP = (type, expirationTimeInMinutes = 10) => {
   const otp = crypto.randomInt(100000, 1000000);
   const currentTimestamp = Date.now();
   const expiredAfter = currentTimestamp + expirationTimeInMinutes * 60 * 1000;
-  return { otp, expiredAfter, type };
+  return { otp, expiredAfter, type, lastSentAt: currentTimestamp };
 };
 
 const validateOTP = (type) =>
@@ -55,15 +55,36 @@ const requestOTP = asyncHandler(async (req, res, next) => {
 
   if (email && type) {
     if (OTP_REQ_TYPES[type]) {
-      const updatedUser = await User.findOneAndUpdate({ email }, { tempOtp });
-      if (updatedUser) {
+      // check if last sent otp was more than 2 min ago
+      const foundUser = await User.findOne({ email });
+      const currentTimestamp = Date.now();
+      const twoMinutes = 2 * 60 * 1000;
+
+      if (foundUser) {
+        if (foundUser.tempOtp && foundUser.tempOtp.type === type) {
+          const lastSent = foundUser.tempOtp.lastSentAt;
+          const timeElapsed = currentTimestamp - lastSent;
+          // if type of otp requested is already sent to user only then check if 2 min past or not;
+          // sent time left before user can request again
+          if (timeElapsed < twoMinutes) {
+            const remainingTime = Math.ceil((twoMinutes - timeElapsed) / (60 * 1000));
+            throw new Error(`Before requesting for another otp, wait for ${remainingTime} min(s).`);
+          }
+        }
+
+        // saving user with new otp;
+        foundUser.tempOtp = tempOtp;
+        await foundUser.save();
+
         const isOTPSent = await sendEmail(email, templateList?.otp?.name, { otp: tempOtp?.otp });
         if (!isOTPSent) {
           throw new Error('Error in sending otp.');
         }
         return res.json({ status: true, message: `Otp successfully sent to user email` });
       }
+      throw new Error('No user found with this email!');
     }
+    throw new Error('Invalid type of otp request');
   }
   if (tempOtp) {
     req.body.tempOtp = tempOtp;
