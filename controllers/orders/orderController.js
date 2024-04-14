@@ -1,15 +1,15 @@
 /* eslint-disable no-underscore-dangle */
-// const Razorpay = require('razorpay');
+const Razorpay = require('razorpay');
 const expressAsyncHandler = require('express-async-handler');
-// const { RAZORPAY_KEYID, RAZORPAY_KEYSECRET } = require('../../utils/globals');
+const { RAZORPAY_KEYID, RAZORPAY_KEYSECRET } = require('../../utils/globals');
 const { OrderModel } = require('../../models/Orders/OrdersModel');
 const Product = require('../../models/Products/Product');
 const { normaliseDate } = require('../../utils/utility');
 
-// const razorpayInstance = new Razorpay({
-//   key_id: RAZORPAY_KEYID,
-//   key_secret: RAZORPAY_KEYSECRET,
-// });
+const razorpayInstance = new Razorpay({
+  key_id: RAZORPAY_KEYID,
+  key_secret: RAZORPAY_KEYSECRET,
+});
 
 const createOrder = expressAsyncHandler(async (req, res) => {
   const { products } = req.body;
@@ -22,7 +22,7 @@ const createOrder = expressAsyncHandler(async (req, res) => {
   let orderAmount = 0;
   products.forEach(async (product) => {
     const selectedProduct = allSelectedProducts.find((p) => p._id.toString() === product._id);
-    const productUnits = parseInt(product.units, 10);
+    const productUnits = parseInt(product.unit, 10);
     const price = selectedProduct.price * productUnits;
 
     if (selectedProduct.stock < productUnits) {
@@ -45,10 +45,19 @@ const createOrder = expressAsyncHandler(async (req, res) => {
     }
   });
 
+  const orderData = await razorpayInstance.orders.create({
+    amount: orderAmount,
+    currency: 'USD',
+  });
+
+  if (!orderData) {
+    throw new Error('Failed to create order');
+  }
+
   let order;
   if (orderProducts.length > 0) {
     order = await OrderModel.create({
-      orderId: 'Test ID',
+      orderId: orderData.id,
       userId: req.userId,
       orderAmount,
       addressId: 'default',
