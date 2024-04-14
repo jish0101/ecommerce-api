@@ -45,6 +45,8 @@ const createOrder = expressAsyncHandler(async (req, res) => {
     }
   });
 
+  orderAmount *= 100;
+
   const orderData = await razorpayInstance.orders.create({
     amount: orderAmount,
     currency: 'USD',
