@@ -42,6 +42,7 @@ app.use(cookieParser());
 app.use('/auth', authRouter);
 app.use('/refresh', refreshRouter);
 app.use('/user', userRouter);
+app.use('/payment', paymentRoute);
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
@@ -50,7 +51,6 @@ app.get('/', (req, res) => {
 
 app.use(verifyJWT);
 app.use('/product-category', productCategoryRouter);
-app.use('/payment', paymentRoute);
 app.use('/address', addressRouter);
 app.use('/products', productsRouter);
 app.use('/orders', orderRouter);
