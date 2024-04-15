@@ -16,12 +16,21 @@ const schemaErrorHandler = (err, req, res, next) => {
 };
 
 const errorHandler = (err, req, res, next) => {
+  const env = process.env.ENV;
   const newStatusCode = res.statusCode === 200 ? 500 : res.statusCode;
+
   res.status(newStatusCode);
+
+  if (env === 'development') {
+    res.json({
+      status: false,
+      message: err?.message,
+      stack: err?.stack,
+    });
+  }
   res.json({
     status: false,
     message: err?.message,
-    stack: err?.stack,
   });
   next(err);
 };
