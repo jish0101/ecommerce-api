@@ -27,12 +27,13 @@ const errorHandler = (err, req, res, next) => {
       message: err?.message,
       stack: err?.stack,
     });
+    return next(err);
   }
   res.json({
     status: false,
     message: err?.message,
   });
-  next(err);
+  return next(err);
 };
 
 module.exports = { notFound, errorHandler, schemaErrorHandler };

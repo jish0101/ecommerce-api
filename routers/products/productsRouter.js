@@ -7,9 +7,7 @@ const {
 } = require('../../controllers/products/productController');
 const jsonParser = require('../../middlewares/jsonParser');
 const roleHandler = require('../../middlewares/roleHandler');
-const { schemaValidator } = require('../../middlewares/schemaValidator');
 const { uploadPhoto, imageValidator } = require('../../middlewares/uploadImage');
-const { userIdSchema } = require('../../models/User/userValidationSchema');
 const { USER_ROLES } = require('../../utils/globals');
 
 const adminRoles = Object.values(USER_ROLES).filter((v) => v > USER_ROLES.moderator);
@@ -29,7 +27,6 @@ router
     uploadPhoto.single('image'),
     imageValidator,
     jsonParser(['category']),
-    schemaValidator.body(userIdSchema),
     updateProduct,
   )
   .delete(roleHandler(adminRoles), deleteProduct);

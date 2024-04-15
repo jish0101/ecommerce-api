@@ -1,6 +1,4 @@
 require('dotenv').config();
-// require('express-async-errors');
-// const { faker } = require('@faker-js/faker');
 const http = require('http');
 const express = require('express');
 const mongoose = require('mongoose');
