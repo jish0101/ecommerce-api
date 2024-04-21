@@ -20,6 +20,7 @@ const validator = (schema) => async (req, res, next) => {
       body: req.body,
       query: req.query,
       params: req.params,
+      file: req.file,
     });
 
     if (!result.success) {

@@ -6,8 +6,9 @@ const {
   deleteProduct,
 } = require('../../controllers/products/productController');
 const jsonParser = require('../../middlewares/jsonParser');
+const { multerInstance } = require('../../middlewares/multer');
 const roleHandler = require('../../middlewares/roleHandler');
-const { uploadPhoto, imageValidator } = require('../../middlewares/uploadImage');
+// const { uploadPhoto, imageValidator } = require('../../middlewares/uploadImage');
 const { USER_ROLES } = require('../../utils/globals');
 
 const adminRoles = Object.values(USER_ROLES).filter((v) => v > USER_ROLES.moderator);
@@ -16,16 +17,14 @@ router
   .route('/')
   .post(
     roleHandler(adminRoles),
-    uploadPhoto.single('image'),
-    imageValidator,
+    multerInstance.single('image'),
     jsonParser(['category']),
     createProduct,
   )
   .get(getProducts)
   .put(
     roleHandler(adminRoles),
-    uploadPhoto.single('image'),
-    imageValidator,
+    multerInstance.single('image'),
     jsonParser(['category']),
     updateProduct,
   )

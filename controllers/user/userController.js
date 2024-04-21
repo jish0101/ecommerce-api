@@ -5,7 +5,8 @@ const { sendEmail, templateList } = require('../../utils/emailService');
 const { STATUSTYPES } = require('../../utils/globals');
 
 const createUser = expressAsyncHandler(async (req, res) => {
-  const { name, email, password, image, tempOtp } = req.body;
+  const file = req.file;
+  const { name, email, password, tempOtp } = req.body;
   const existingUser = await User.findOne({ email });
 
   if (existingUser) {
@@ -19,7 +20,7 @@ const createUser = expressAsyncHandler(async (req, res) => {
     email,
     tempOtp,
     status: STATUSTYPES.active,
-    profile: image,
+    profile: file.path,
     updatedBy: req.userId || '',
     password: hashedPassword,
   });
@@ -36,7 +37,8 @@ const createUser = expressAsyncHandler(async (req, res) => {
 });
 
 const updateUser = expressAsyncHandler(async (req, res) => {
-  const { id, name, email, password, address, tempOtp, image, status } = req.body;
+  const file = req.file;
+  const { id, name, email, password, address, tempOtp, status } = req.body;
 
   if (email) {
     const isDuplicate = await User.findOne({
@@ -54,7 +56,7 @@ const updateUser = expressAsyncHandler(async (req, res) => {
     res.status(400);
     throw new Error('No user found with this email.');
   }
-  const updatedProfile = req?.file ? image : existingUser?.profile;
+  const updatedProfile = req.file ? file.path : existingUser?.profile;
   const hashedPassword = await bcrypt.hash(password, 10);
 
   if (email !== existingUser?.email) {
