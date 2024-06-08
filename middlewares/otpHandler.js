@@ -32,8 +32,10 @@ const validateOTP = (type) =>
       throw new Error('No user found with this email!');
     }
 
+    const existingType = existingUser.tempOtp?.type;
+
     if (existingUser.tempOtp?.otp === parseInt(otp, 10)) {
-      if (type && type !== existingUser.tempOtp?.type) {
+      if (type && type !== existingType && existingType) {
         res.status(400);
         throw new Error('Invalid Action!');
       }

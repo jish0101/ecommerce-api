@@ -1,28 +1,43 @@
 const expressAsyncHandler = require('express-async-handler');
 const Product = require('../../models/Products/Product');
+const { ProductCategory } = require('../../models/ProductCategory/ProductCategory');
+const { ProductCurrency } = require('../../models/ProductCurrency/ProductCurrency');
 const { STATUSTYPES } = require('../../utils/globals');
-const { defaultProductCurrency } = require('../../models/ProductCurrency/ProductCurrency');
 
 const createProduct = expressAsyncHandler(async (req, res) => {
-  const { name, image, price, stock, category } = req.body;
+  const { name, image, price, stock, categoryId, currencyId, productMaterial, productDescription } =
+    req.body;
+
+  // Validate category
+  const category = await ProductCategory.findById(categoryId);
+  if (!category) {
+    return res.status(400).json({ status: false, message: 'Invalid category ID' });
+  }
+
+  // Validate currency
+  const currency = await ProductCurrency.findById(currencyId);
+  if (!currency) {
+    return res.status(400).json({ status: false, message: 'Invalid currency ID' });
+  }
 
   const product = new Product({
     name,
     image,
     price,
-    category,
     stock,
-    currency: defaultProductCurrency,
+    category: category._id,
+    currency: currency._id,
+    productMaterial,
+    productDescription,
   });
 
-  res.json({ status: true, message: 'Successfully created a product', data: product });
+  await product.save();
+
+  return res.json({ status: true, message: 'Successfully created a product', data: product });
 });
 
 const getProducts = expressAsyncHandler(async (req, res) => {
-  const { id, name, categoryId, status, page = 1, rowCount = 10 } = req.query;
-
-  // const result = await Product.find({}, { _id: 1 }).limit(3);
-  // return res.json({ data: result });
+  const { id, name, categoryId, currencyId, status, page = 1, rowCount = 10 } = req.query;
 
   const pageNum = parseInt(page, 10);
   const size = parseInt(rowCount, 10);
@@ -34,7 +49,11 @@ const getProducts = expressAsyncHandler(async (req, res) => {
   };
 
   if (categoryId) {
-    query['category._id'] = categoryId;
+    query.category = categoryId;
+  }
+
+  if (currencyId) {
+    query.currency = currencyId;
   }
 
   if (name) {
@@ -46,8 +65,7 @@ const getProducts = expressAsyncHandler(async (req, res) => {
   }
 
   if (id) {
-    query._id = id;
-    const foundRes = await Product.findById(id);
+    const foundRes = await Product.findById(id).populate('category').populate('currency');
     if (foundRes) {
       return res.json({ status: true, data: foundRes });
     }
@@ -56,7 +74,12 @@ const getProducts = expressAsyncHandler(async (req, res) => {
 
   const skip = (pageNum - 1) * size;
   const totalRecords = await Product.countDocuments(query);
-  const foundProducts = await Product.find(query).skip(skip).limit(size).sort({ createdAt: 1 });
+  const foundProducts = await Product.find(query)
+    .populate('category')
+    .populate('currency')
+    .skip(skip)
+    .limit(size)
+    .sort({ createdAt: 1 });
 
   if (foundProducts.length > 0) {
     const totalPages = Math.ceil(totalRecords / size);
@@ -66,7 +89,7 @@ const getProducts = expressAsyncHandler(async (req, res) => {
       pagination: {
         totalPages,
         totalRecords,
-        page,
+        page: pageNum,
       },
     });
   }
@@ -75,9 +98,21 @@ const getProducts = expressAsyncHandler(async (req, res) => {
 });
 
 const updateProduct = expressAsyncHandler(async (req, res) => {
-  const { id, name, image, price, stock, category, status } = req.body;
+  const { id, name, image, price, stock, categoryId, currencyId, status } = req.body;
   const isImageUpdate = req.file;
   const updatedAt = Date.now();
+
+  // Validate category
+  const category = await ProductCategory.findById(categoryId);
+  if (!category) {
+    return res.status(400).json({ status: false, message: 'Invalid category ID' });
+  }
+
+  // Validate currency
+  const currency = await ProductCurrency.findById(currencyId);
+  if (!currency) {
+    return res.status(400).json({ status: false, message: 'Invalid currency ID' });
+  }
 
   const updatedProduct = await Product.findByIdAndUpdate(
     id,
@@ -85,14 +120,16 @@ const updateProduct = expressAsyncHandler(async (req, res) => {
       name,
       image: isImageUpdate ? image : undefined,
       price,
-      category,
+      category: category._id,
+      currency: currency._id,
       stock,
-      currency: defaultProductCurrency,
       status,
       updatedAt,
     },
     { new: true },
-  );
+  )
+    .populate('category')
+    .populate('currency');
 
   return res.json({
     status: true,

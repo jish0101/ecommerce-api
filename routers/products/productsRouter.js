@@ -5,7 +5,6 @@ const {
   updateProduct,
   deleteProduct,
 } = require('../../controllers/products/productController');
-const jsonParser = require('../../middlewares/jsonParser');
 const roleHandler = require('../../middlewares/roleHandler');
 const { schemaValidator } = require('../../middlewares/schemaValidator');
 const { uploadPhoto, imageValidator } = require('../../middlewares/uploadImage');
@@ -16,19 +15,12 @@ const adminRoles = Object.values(USER_ROLES).filter((v) => v > USER_ROLES.modera
 
 router
   .route('/')
-  .post(
-    roleHandler(adminRoles),
-    uploadPhoto.single('image'),
-    imageValidator,
-    jsonParser(['category']),
-    createProduct,
-  )
+  .post(roleHandler(adminRoles), uploadPhoto.single('image'), imageValidator, createProduct)
   .get(getProducts)
   .put(
     roleHandler(adminRoles),
     uploadPhoto.single('image'),
     imageValidator,
-    jsonParser(['category']),
     schemaValidator.body(userIdSchema),
     updateProduct,
   )

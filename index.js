@@ -1,6 +1,4 @@
 require('dotenv').config();
-// require('express-async-errors');
-// const { faker } = require('@faker-js/faker');
 const http = require('http');
 const express = require('express');
 const mongoose = require('mongoose');
@@ -24,6 +22,7 @@ connectDB();
 // routes
 const authRouter = require('./routers/auth/authRouter');
 const productCategoryRouter = require('./routers/products/productCategory');
+const productCurrencyRouter = require('./routers/products/productCurrency');
 const productsRouter = require('./routers/products/productsRouter');
 const refreshRouter = require('./routers/auth/refresh');
 const userRouter = require('./routers/user/userRouter');
@@ -51,8 +50,9 @@ app.get('/', (req, res) => {
 
 app.use(verifyJWT);
 app.use('/product-category', productCategoryRouter);
-app.use('/address', addressRouter);
+app.use('/product-currency', productCurrencyRouter);
 app.use('/products', productsRouter);
+app.use('/address', addressRouter);
 app.use('/orders', orderRouter);
 
 app.use(notFound);

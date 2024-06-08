@@ -4,11 +4,28 @@ const { STATUSTYPES } = require('../../utils/globals');
 
 const createProductCategory = expressAsyncHandler(async (req, res) => {
   const { name, status } = req.body;
+  const allowedStatus = [STATUSTYPES.active, STATUSTYPES.inactive];
+
+  const existingProduct = await ProductCategory.findOne({
+    name,
+    status: { $in: allowedStatus },
+  });
+
+  if (existingProduct) {
+    return res.json({
+      status: true,
+      message: 'Product category already exists',
+    });
+  }
 
   const productCategory = new ProductCategory({ name, status });
   await productCategory.save();
 
-  res.json({ status: true, message: 'Successfully created a product', data: productCategory });
+  return res.json({
+    status: true,
+    message: 'Successfully created a product',
+    data: productCategory,
+  });
 });
 
 const getProductsCategory = expressAsyncHandler(async (req, res) => {

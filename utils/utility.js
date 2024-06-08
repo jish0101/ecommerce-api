@@ -5,13 +5,13 @@ const { accessTokenSec, refreshTokenSec } = require('./globals');
 function createToken({ data, type }) {
   if (type === 1) {
     const token = jwt.sign(data, accessTokenSec, {
-      expiresIn: '10m',
+      expiresIn: 3600,
     });
     return token;
   }
 
   const token = jwt.sign(data, refreshTokenSec, {
-    expiresIn: '1d',
+    expiresIn: 3600 * 24,
   });
   return token;
 }

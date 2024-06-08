@@ -18,7 +18,11 @@ const createAddress = expressAsyncHandler(async (req, res) => {
     isPrimary: !existingAddress,
   });
 
-  res.json({ status: true, message: 'Successfully created an address', data: createdAddress });
+  return res.json({
+    status: true,
+    message: 'Successfully created an address',
+    data: createdAddress,
+  });
 });
 
 const updateAddress = expressAsyncHandler(async (req, res) => {

@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
-const { categorySchema } = require('../ProductCategory/ProductCategory');
 const { STATUSTYPES } = require('../../utils/globals');
-const { ProductCurrencySchema } = require('../ProductCurrency/ProductCurrency');
 
 const productSchema = new mongoose.Schema({
   name: {
@@ -21,7 +19,11 @@ const productSchema = new mongoose.Schema({
     required: true,
     min: 1,
   },
-  currency: ProductCurrencySchema,
+  currency: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'ProductCurrency',
+    required: true,
+  },
   stock: {
     type: Number,
     required: true,
@@ -41,7 +43,11 @@ const productSchema = new mongoose.Schema({
     minLength: 3,
     maxLength: 1000,
   },
-  category: categorySchema,
+  category: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'ProductCategory',
+    required: true,
+  },
   status: {
     type: String,
     default: STATUSTYPES.active,

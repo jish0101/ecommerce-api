@@ -6,11 +6,8 @@ const {
   getAddresses,
 } = require('../../controllers/address/addressController');
 
-addressRouter
-  .route('/')
-  .get(getAddresses)
-  .post(createAddress)
-  .put(updateAddress)
-  .delete(deleteAddress);
+addressRouter.route('/').get(getAddresses).post(createAddress).put(updateAddress);
+
+addressRouter.delete('/:id', deleteAddress);
 
 module.exports = addressRouter;

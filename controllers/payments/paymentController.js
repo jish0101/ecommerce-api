@@ -1,6 +1,5 @@
 const crypto = require('crypto');
 const expressAsyncHandler = require('express-async-handler');
-// const Razorpay = require('razorpay');
 const { CLIENT_BASE_URL, RAZORPAY_KEYSECRET } = require('../../utils/globals');
 const { PaymentModel } = require('../../models/Payments/PaymentModel');
 const { OrderModel } = require('../../models/Orders/OrdersModel');
@@ -17,7 +16,6 @@ const verifyPayments = async (req, res) => {
     razorpay_payment_id: paymentId,
     razorpay_signature: paymentSignature,
   } = req.body;
-  console.log('🚀 ~ verifyPayments ~ req.body:', req.body);
 
   const body = `${orderId}|${paymentId}`;
 
@@ -39,7 +37,7 @@ const verifyPayments = async (req, res) => {
 
     return res.redirect(`${CLIENT_BASE_URL}paymentsuccess?reference=${paymentId}`);
   }
-  res.status(400).json({
+  return res.status(400).json({
     success: false,
   });
 };
