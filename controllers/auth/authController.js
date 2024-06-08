@@ -53,11 +53,10 @@ const loginUser = asyncHandler(async (req, res) => {
     );
 
     await newUser.save();
-
     res.cookie('jwt', refreshToken, {
       httpOnly: true,
-      sameSite: 'None',
       secure: true,
+      sameSite: 'none',
       maxAge: 24 * 60 * 60 * 1000,
     });
 
@@ -104,8 +103,8 @@ const logoutUser = asyncHandler(async (req, res) => {
   await newUser.save();
   res.clearCookie('jwt', {
     httpOnly: true,
-    sameSite: 'None',
     secure: true,
+    sameSite: 'none',
   });
   return res.status(200).json({ status: true, message: 'Successfully loggedout.' });
 });

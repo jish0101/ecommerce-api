@@ -30,9 +30,9 @@ const paymentRoute = require('./routers/payments/paymentRoute');
 const orderRouter = require('./routers/orders/orderRouter');
 const addressRouter = require('./routers/address/addressRouter');
 
-app.set('view engine', 'ejs');
 app.use(credentials);
 app.use(cors(corsOptions));
+app.set('view engine', 'ejs');
 app.use(morgan('common'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
