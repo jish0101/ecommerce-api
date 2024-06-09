@@ -53,11 +53,23 @@ const updateAddress = expressAsyncHandler(async (req, res) => {
 });
 
 const deleteAddress = expressAsyncHandler(async (req, res) => {
-  const { id } = req.query;
+  const { id } = req.params;
 
-  await Address.findByIdAndUpdate(id, { status: STATUSTYPES.deleted });
+  const foundAdd = await Address.findById(id);
 
-  res.json({ status: true, message: 'Successfully deleted an address' });
+  if (!foundAdd) {
+    return res.json({ status: false, message: 'Product not found' });
+  }
+
+  if (foundAdd.isPrimary) {
+    return res.json({ status: false, message: 'Primary address cannot be removed' });
+  }
+
+  foundAdd.status = STATUSTYPES.deleted;
+
+  await foundAdd.save();
+
+  return res.json({ status: true, message: 'Successfully deleted an address' });
 });
 
 const getAddresses = expressAsyncHandler(async (req, res) => {
