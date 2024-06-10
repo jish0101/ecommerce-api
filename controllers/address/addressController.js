@@ -26,30 +26,36 @@ const createAddress = expressAsyncHandler(async (req, res) => {
 });
 
 const updateAddress = expressAsyncHandler(async (req, res) => {
-  const { userId } = req;
-  let newStatus;
-  const { id, street, city, state, country, code, status, isPrimary } = req.body;
-  const allowedStatuses = [STATUSTYPES.active, STATUSTYPES.inactive];
+  const { _id, street, city, state, country, code, isPrimary } = req.body;
 
-  if (allowedStatuses.includes(status)) {
-    newStatus = status;
+  const newAddress = {
+    street,
+    city,
+    state,
+    country,
+    code,
+  };
+
+  if (isPrimary) {
+    // Find the current primary address and set it to false
+    const existingPrimaryAddress = await Address.findOne({ isPrimary: true });
+    if (existingPrimaryAddress) {
+      existingPrimaryAddress.isPrimary = false;
+      await existingPrimaryAddress.save();
+
+      await Address.findByIdAndUpdate(_id, { isPrimary: true });
+      return res.json({ status: true, message: 'Successfully updated your default address' });
+    }
   }
 
-  if (isPrimary === 'true' || isPrimary === true) {
-    await Address.findOneAndUpdate(
-      { userId, isPrimary: true },
-      { isPrimary: false },
-      { new: true },
-    );
-  }
+  // Update the provided address
+  const updatedAddress = await Address.findByIdAndUpdate(_id, newAddress, { new: true });
 
-  const updatedAddress = await Address.findByIdAndUpdate(
-    id,
-    { street, city, state, country, code, isPrimary, status: newStatus },
-    { new: true },
-  );
-
-  res.json({ status: true, message: 'Successfully updated an address', data: updatedAddress });
+  return res.json({
+    status: true,
+    message: 'Successfully updated your address',
+    data: updatedAddress,
+  });
 });
 
 const deleteAddress = expressAsyncHandler(async (req, res) => {
